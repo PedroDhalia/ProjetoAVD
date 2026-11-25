@@ -1,0 +1,44 @@
+{
+  "livre": {
+    "k": 4,
+    "acuracia": 0.37230474365117394,
+    "precisao_macro": 0.16507295694762977,
+    "recall_macro": 0.37088289710012556,
+    "classes_nunca_previstas": [
+      "Peso normal",
+      "Sobrepeso I",
+      "Sobrepeso II",
+      "Obesidade I"
+    ],
+    "ari": 0.18316666707588827,
+    "nmi": 0.270679469945026,
+    "conferido_sklearn": true,
+    "mapa": {
+      "0": "Abaixo do peso",
+      "1": "Obesidade III",
+      "2": "Obesidade II",
+      "3": "Obesidade II"
+    }
+  },
+  "fixo": {
+    "k": 7,
+    "acuracia": 0.4484906564446574,
+    "precisao_macro": 0.3981504117453959,
+    "recall_macro": 0.43640765498909456,
+    "classes_nunca_previstas": [
+      "Peso normal"
+    ],
+    "ari": 0.24289817206549316,
+    "nmi": 0.33780702146549796,
+    "conferido_sklearn": true,
+    "mapa": {
+      "0": "Obesidade III",
+      "1": "Obesidade II",
+      "2": "Sobrepeso II",
+      "3": "Obesidade I",
+      "4": "Sobrepeso I",
+      "5": "Abaixo do peso",
+      "6": "Obesidade II"
+    }
+  }
+}

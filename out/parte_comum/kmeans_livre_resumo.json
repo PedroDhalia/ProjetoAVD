@@ -1,0 +1,124 @@
+{
+  "dataset": "obesity",
+  "modo": "livre",
+  "n": 2087,
+  "features": [
+    "Age",
+    "Height",
+    "Weight",
+    "FCVC",
+    "NCP",
+    "CH2O",
+    "FAF",
+    "TUE",
+    "Gender",
+    "family_history_with_overweight",
+    "FAVC",
+    "SMOKE",
+    "SCC",
+    "CAEC",
+    "CALC"
+  ],
+  "curva": [
+    {
+      "k": 1,
+      "inercia": 31305.0,
+      "silhueta": NaN,
+      "queda_pct": NaN,
+      "distancia_corda": 0.0
+    },
+    {
+      "k": 2,
+      "inercia": 27637.0047,
+      "silhueta": 0.207,
+      "queda_pct": 11.717,
+      "distancia_corda": 0.1008
+    },
+    {
+      "k": 3,
+      "inercia": 25341.1484,
+      "silhueta": 0.1082,
+      "queda_pct": 8.3072,
+      "distancia_corda": 0.1345
+    },
+    {
+      "k": 4,
+      "inercia": 23329.8278,
+      "silhueta": 0.1211,
+      "queda_pct": 7.937,
+      "distancia_corda": 0.1543
+    },
+    {
+      "k": 5,
+      "inercia": 21904.2874,
+      "silhueta": 0.1164,
+      "queda_pct": 6.1104,
+      "distancia_corda": 0.1455
+    },
+    {
+      "k": 6,
+      "inercia": 20519.4436,
+      "silhueta": 0.1312,
+      "queda_pct": 6.3222,
+      "distancia_corda": 0.1346
+    },
+    {
+      "k": 7,
+      "inercia": 19087.0249,
+      "silhueta": 0.1477,
+      "queda_pct": 6.9808,
+      "distancia_corda": 0.1261
+    },
+    {
+      "k": 8,
+      "inercia": 18100.159,
+      "silhueta": 0.1564,
+      "queda_pct": 5.1703,
+      "distancia_corda": 0.0958
+    },
+    {
+      "k": 9,
+      "inercia": 17380.5682,
+      "silhueta": 0.1636,
+      "queda_pct": 3.9756,
+      "distancia_corda": 0.0524
+    },
+    {
+      "k": 10,
+      "inercia": 16846.4098,
+      "silhueta": 0.1498,
+      "queda_pct": 3.0733,
+      "distancia_corda": 0.0
+    }
+  ],
+  "estabilidade": [
+    {
+      "semente": 0,
+      "k_cotovelo_1a10": 4,
+      "k_cotovelo_2a10": 6
+    },
+    {
+      "semente": 7,
+      "k_cotovelo_1a10": 4,
+      "k_cotovelo_2a10": 6
+    },
+    {
+      "semente": 42,
+      "k_cotovelo_1a10": 4,
+      "k_cotovelo_2a10": 7
+    },
+    {
+      "semente": 123,
+      "k_cotovelo_1a10": 4,
+      "k_cotovelo_2a10": 6
+    },
+    {
+      "semente": 2026,
+      "k_cotovelo_1a10": 4,
+      "k_cotovelo_2a10": 6
+    }
+  ],
+  "k": 4,
+  "inercia": 23329.827754158403,
+  "silhueta": 0.12108506281987443
+}

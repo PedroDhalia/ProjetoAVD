@@ -1,0 +1,25 @@
+{
+  "dataset": "obesity",
+  "modo": "fixo",
+  "n": 2087,
+  "features": [
+    "Age",
+    "Height",
+    "Weight",
+    "FCVC",
+    "NCP",
+    "CH2O",
+    "FAF",
+    "TUE",
+    "Gender",
+    "family_history_with_overweight",
+    "FAVC",
+    "SMOKE",
+    "SCC",
+    "CAEC",
+    "CALC"
+  ],
+  "k": 7,
+  "inercia": 19087.024852823524,
+  "silhueta": 0.14772849422568507
+}
