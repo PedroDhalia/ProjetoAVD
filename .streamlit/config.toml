@@ -1,0 +1,51 @@
+# Tema do dashboard (baseado no template "dense-dashboard" do Streamlit).
+# Cores alinhadas à paleta do projeto (src/estilo.py): azul = referência, laranja = cancelamento/risco.
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+showWidgetBorder = true
+showSidebarBorder = true
+baseRadius = "6px"
+buttonRadius = "6px"
+font = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+headingFont = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap"
+baseFontSize = 14
+headingFontSizes = ["28px", "22px", "18px", "16px", "14px", "12px"]
+headingFontWeights = [700, 600, 600, 600, 500, 500]
+linkUnderline = false
+paddingTop = "1rem"
+paddingBottom = "3rem"
+
+[theme.light]
+primaryColor = "#2a78d6"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F4F4F1"
+textColor = "#0b0b0b"
+linkColor = "#1c5cab"
+borderColor = "#D9D8D2"
+redColor = "#d03b3b"
+orangeColor = "#c4521f"
+greenColor = "#006300"
+blueColor = "#1c5cab"
+chartCategoricalColors = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"]
+dataframeHeaderBackgroundColor = "#EEEDE8"
+
+[theme.dark]
+primaryColor = "#3987e5"
+backgroundColor = "#141413"
+secondaryBackgroundColor = "#1f1f1e"
+textColor = "#f0efec"
+linkColor = "#86b6ef"
+borderColor = "#383835"
+redColor = "#e66767"
+orangeColor = "#ec835a"
+greenColor = "#0ca30c"
+blueColor = "#6da7ec"
+chartCategoricalColors = ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#0ca30c", "#9085e9", "#e66767"]
+dataframeHeaderBackgroundColor = "#262624"
+
+[theme.sidebar]
+paddingTop = "0.5rem"
+paddingBottom = "1.5rem"

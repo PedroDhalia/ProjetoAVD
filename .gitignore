@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editores / sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Streamlit (segredos nunca vão para o repositório)
+.streamlit/secrets.toml
+
+# Zip original do Kaggle (o CSV já está em data/parte_especifica/)
+hotel_dataset.zip
