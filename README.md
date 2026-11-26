@@ -30,10 +30,9 @@ projeto-avd/
 ├─ relatorio.pdf                      # relatório técnico completo (Partes Comum e Específica)
 ├─ .streamlit/config.toml             # tema do dashboard
 ├─ docs/
-│  ├─ DECLARACAO_IA.pdf               # declaração de uso de IA (assinar)
+│  ├─ DECLARACAO_IA.pdf               # declaração de uso de IA (assinada pelos integrantes)
 │  ├─ MATRIZ_CONTRIBUICAO.md          # matriz de contribuição dos integrantes
-│  ├─ relatorio.html                  # fonte do relatorio.pdf
-│  └─ DECLARACAO_IA.html              # fonte da declaração
+│  └─ relatorio.html                  # fonte do relatorio.pdf
 ├─ data/
 │  ├─ baixar_dados.py                 # baixa os datasets se não estiverem aqui
 │  ├─ parte_comum/ObesityDataSet_raw_and_data_sinthetic.csv
@@ -46,7 +45,7 @@ projeto-avd/
 │     ├─ eda.ipynb                    # EDA executada, com comentários
 │     └─ kmeans_metricas.ipynb        # padronização, 2 passadas, métricas e discussão
 ├─ scripts/
-│  └─ gerar_documentos.py             # gera relatorio.pdf e docs/DECLARACAO_IA.pdf
+│  └─ gerar_documentos.py             # gera relatorio.pdf
 └─ src/
    ├─ estilo.py                       # paleta de cores e estilo comuns
    ├─ parte_comum/
@@ -117,14 +116,15 @@ Se o comando `streamlit` não for encontrado, use `python -m streamlit run src/p
 Na primeira abertura, o dashboard leva alguns segundos para tratar os dados, treinar o modelo (página *Simulador*) e rodar
 o K-Means (página da Parte Comum); depois tudo fica em cache.
 
-### Relatório e declaração
+### Relatório
 
 ```bash
 python scripts/gerar_documentos.py
 ```
 
-Monta `docs/relatorio.html` e `docs/DECLARACAO_IA.html` com as figuras e tabelas de `out/` e converte para PDF com o
-Edge/Chrome em modo headless. Sem navegador disponível, abra os `.html` e use *Imprimir → Salvar como PDF*.
+Monta `docs/relatorio.html` com as figuras e tabelas de `out/` e converte para PDF com o Edge/Chrome em modo headless.
+Sem navegador disponível, abra o `.html` e use *Imprimir → Salvar como PDF*. A declaração de uso de IA não é gerada pelo
+script: `docs/DECLARACAO_IA.pdf` é o documento assinado pelos integrantes.
 
 ## Dashboard
 
@@ -145,7 +145,7 @@ exportação dos dados filtrados (CSV) e de um relatório HTML da seleção.
 ## Documentos
 
 - [relatorio.pdf](relatorio.pdf): análise técnica completa das duas partes.
-- [docs/DECLARACAO_IA.pdf](docs/DECLARACAO_IA.pdf): declaração de uso de IA, a ser assinada por todos os integrantes.
+- [docs/DECLARACAO_IA.pdf](docs/DECLARACAO_IA.pdf): declaração de uso de IA, assinada digitalmente (gov.br) pelos três integrantes.
 - [docs/MATRIZ_CONTRIBUICAO.md](docs/MATRIZ_CONTRIBUICAO.md): contribuição de cada integrante.
 
 ## Fontes dos dados

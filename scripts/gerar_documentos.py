@@ -1,12 +1,14 @@
-"""Gera o relatório (relatorio.pdf) e a Declaração de Uso de IA (docs/DECLARACAO_IA.pdf).
+"""Gera o relatório técnico (relatorio.pdf).
 
 Uso (na raiz do repositório, depois de rodar os scripts de análise):
     python scripts/gerar_documentos.py
 
-O texto é montado em HTML (docs/relatorio.html e docs/DECLARACAO_IA.html) com as
-figuras e tabelas de out/ e convertido em PDF pelo Microsoft Edge ou Google Chrome
-em modo headless. Sem navegador disponível, abra os .html e use "Imprimir > Salvar
-como PDF".
+O texto é montado em HTML (docs/relatorio.html) com as figuras e tabelas de out/ e
+convertido em PDF pelo Microsoft Edge ou Google Chrome em modo headless. Sem navegador
+disponível, abra o .html e use "Imprimir > Salvar como PDF".
+
+A Declaração de Uso de IA (docs/DECLARACAO_IA.pdf) não é gerada aqui: é o documento
+assinado digitalmente pelos integrantes e não deve ser sobrescrito.
 """
 
 from __future__ import annotations
@@ -482,43 +484,6 @@ condition. <i>Data in Brief</i>, 25, 104344. UCI Machine Learning Repository, da
 
 
 # --------------------------------------------------------------------------
-def declaracao() -> str:
-    linhas_uso = [
-        ("Código (EDA, K-Means, métricas, modelo e dashboard)", "Código gerado e depurado com o assistente de IA a partir das instruções do grupo; revisado e executado pelos integrantes."),
-        ("Limpeza, tratamento de faltantes e outliers", "Diagnósticos e tratamentos propostos com apoio da IA e decididos/validados pelo grupo."),
-        ("Padronização, agrupamento e métricas", "Implementação e cálculo com apoio da IA; métricas conferidas com o scikit-learn."),
-        ("Interpretação, storytelling e notas analíticas", "Textos redigidos com apoio da IA a partir dos resultados obtidos."),
-        ("Visualizações e dashboard Streamlit", "Gráficos, paleta de cores e páginas construídos com apoio da IA."),
-        ("Relatório, README e documentação", "Redigidos com apoio da IA e revisados pelo grupo."),
-    ]
-    tabela_uso = "".join(f"<tr><td>{html.escape(e)}</td><td>{html.escape(u)}</td></tr>" for e, u in linhas_uso)
-    assinaturas = "".join(f"<div>{html.escape(n)}<br><span class='sub'>Assinatura · Data: ____/____/2026</span></div>"
-                          for n in INTEGRANTES)
-    return f"""<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Declaração de Uso de IA</title>
-<style>{CSS} body {{ font-size: 10pt; }} h3 {{ margin: 8pt 0 2pt; }} table {{ font-size: 8.4pt; }} .assinatura div {{ margin-top: 20pt; }} @page {{ margin: 14mm 16mm; }}</style></head><body>
-<p class="sub">Análise e Visualização de Dados (AVD) — 2026.2 · Projeto Final (AV2)</p>
-<h1>Declaração de Uso de Inteligência Artificial</h1>
-<p><b>Integrantes:</b> {", ".join(INTEGRANTES)}</p>
-<p>Declaramos, para os devidos fins, que utilizamos ferramentas de Inteligência Artificial no desenvolvimento deste projeto,
-conforme permitido pelo enunciado ("o uso de ferramentas de IA está totalmente liberado em todas as etapas e requisitos").</p>
-<h3>Ferramenta utilizada</h3>
-<p><b>Claude Code</b> (assistente de programação da Anthropic, modelo Claude Opus 5.5), executado no editor VS Code,
-como ferramenta principal de apoio.</p>
-<h3>Etapas em que a IA foi utilizada</h3>
-<table><tr><th style="width:38%">Etapa</th><th>Forma de uso</th></tr>{tabela_uso}</table>
-<h3>Decisões do grupo</h3>
-<p>A escolha dos datasets (Obesity na Parte Comum; Hotel Booking Demand na Parte Específica), o
-direcionamento do projeto e a validação final dos resultados foram feitos pelos integrantes.</p>
-<h3>Responsabilidade</h3>
-<p>Declaramos que revisamos o conteúdo produzido com auxílio de IA, que compreendemos o funcionamento do projeto, as decisões
-tomadas, os métodos utilizados e os resultados apresentados, e que estamos aptos a explicar qualquer parte do trabalho —
-código, análises e interpretações — durante a defesa.</p>
-<p style="margin-top:14pt">Local e data: ______________________, ____ de novembro de 2026.</p>
-<section class="assinatura">{assinaturas}</section>
-</body></html>"""
-
-
-# --------------------------------------------------------------------------
 def _navegador() -> str | None:
     candidatos = [
         r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -554,10 +519,7 @@ def main() -> None:
     DOCS.mkdir(exist_ok=True)
     rel_html = DOCS / "relatorio.html"
     rel_html.write_text(relatorio(), encoding="utf-8")
-    dec_html = DOCS / "DECLARACAO_IA.html"
-    dec_html.write_text(declaracao(), encoding="utf-8")
     para_pdf(rel_html, RAIZ / "relatorio.pdf")
-    para_pdf(dec_html, DOCS / "DECLARACAO_IA.pdf")
 
 
 if __name__ == "__main__":
