@@ -1,0 +1,11 @@
+{
+  "reservas": 119210.0,
+  "taxa_cancelamento": 0.370765875346028,
+  "canceladas": 44199.0,
+  "receita_cancelada": 16721921.120000001,
+  "pct_receita_cancelada": 0.3915280960729253,
+  "antecedencia_mediana": 69.0,
+  "adr_mediana": 94.95,
+  "linhas_brutas": 119390.0,
+  "colunas_brutas": 32.0
+}

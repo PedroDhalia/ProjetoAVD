@@ -1,0 +1,13 @@
+faixa_antecedencia,pedidos,reservas,taxa
+0–7 dias,Com ≥ 1 pedido especial,7929,0.06142010341783327
+8–30 dias,Com ≥ 1 pedido especial,9289,0.19948325976961997
+31–90 dias,Com ≥ 1 pedido especial,13176,0.2439283545840923
+91–180 dias,Com ≥ 1 pedido especial,10832,0.25904726735598227
+181–365 dias,Com ≥ 1 pedido especial,7123,0.3202302400673873
+> 1 ano,Com ≥ 1 pedido especial,660,0.03636363636363636
+0–7 dias,Nenhum pedido especial,11706,0.1194259354177345
+8–30 dias,Nenhum pedido especial,9656,0.3552195526097763
+31–90 dias,Nenhum pedido especial,16353,0.48474286063719196
+91–180 dias,Nenhum pedido especial,15588,0.5782011803951758
+181–365 dias,Nenhum pedido especial,14411,0.6703906737908543
+> 1 ano,Nenhum pedido especial,2487,0.8464012866907921

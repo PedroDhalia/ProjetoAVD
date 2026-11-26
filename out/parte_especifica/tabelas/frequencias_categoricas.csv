@@ -1,0 +1,45 @@
+,proporcao,variavel
+Hotel urbano,0.664063417498532,hotel
+Hotel resort,0.335936582501468,hotel
+Café da manhã (BB),0.7737270363224562,meal
+Meia pensão (HB),0.12128177166345105,meal
+Sem refeição (SC),0.09829712272460364,meal
+Pensão completa (FB),0.006694069289489137,meal
+Agência online,0.47319855716802284,market_segment
+Agência/operadora offline,0.20285210972233872,market_segment
+Grupos,0.16601795151413473,market_segment
+Direto,0.10554483684254677,market_segment
+Corporativo,0.04430836339233286,market_segment
+Cortesia,0.0061068702290076335,market_segment
+Aviação,0.001971311131616475,market_segment
+Agência/operadora,0.8200067108464055,distribution_channel
+Direto,0.12258199815451724,distribution_channel
+Corporativo,0.05579229930374969,distribution_channel
+GDS,0.0016189916953275733,distribution_channel
+Sem depósito,0.8762771579565473,deposit_type
+Não reembolsável,0.1223638956463384,deposit_type
+Reembolsável,0.001358946397114336,deposit_type
+Individual,0.7505746162234712,customer_type
+Individual vinculado,0.21045214327657075,customer_type
+Contrato,0.03415820820400973,customer_type
+Grupo,0.004815032295948326,customer_type
+Portugal,0.40670245784749604,pais_grupo
+Outros,0.15568324804966027,pais_grupo
+Reino Unido,0.10166932304336884,pais_grupo
+França,0.0872493918295445,pais_grupo
+Espanha,0.07180605653888096,pais_grupo
+Alemanha,0.06111064508011073,pais_grupo
+Itália,0.03154936666387048,pais_grupo
+Irlanda,0.028302994715208456,pais_grupo
+Bélgica,0.019646002852109722,pais_grupo
+Brasil,0.01863937589128429,pais_grupo
+Holanda,0.017641137488465734,pais_grupo
+A,0.7203506417246875,reserved_room_type
+D,0.160884154013925,reserved_room_type
+E,0.054685009646841705,reserved_room_type
+F,0.02427648687190672,reserved_room_type
+G,0.01754886335039007,reserved_room_type
+B,0.009353242177669658,reserved_room_type
+C,0.007809747504403993,reserved_room_type
+H,0.005041523362134049,reserved_room_type
+L,5.03313480412717e-05,reserved_room_type

@@ -1,0 +1,33 @@
+coluna,descricao,tipo_estatistico,dtype_pandas,valores_unicos,faltantes
+hotel,Hotel,Qualitativa nominal,str,2,0
+is_canceled,Cancelada (0/1),Qualitativa binária (ALVO),int64,2,0
+lead_time,Antecedência (dias),Quantitativa discreta,int64,479,0
+arrival_date_year,Ano de chegada,Quantitativa discreta (tempo),int64,3,0
+arrival_date_month,Mês de chegada,Qualitativa ordinal (tempo),str,12,0
+arrival_date_week_number,Semana do ano,Quantitativa discreta (tempo),int64,53,0
+arrival_date_day_of_month,Dia do mês,Quantitativa discreta (tempo),int64,31,0
+stays_in_weekend_nights,Noites de fim de semana,Quantitativa discreta,int64,17,0
+stays_in_week_nights,Noites de semana,Quantitativa discreta,int64,35,0
+adults,Adultos,Quantitativa discreta,int64,14,0
+children,Crianças,Quantitativa discreta,float64,5,4
+babies,Bebês,Quantitativa discreta,int64,5,0
+meal,Regime de refeição,Qualitativa nominal,str,5,0
+country,País de origem,Qualitativa nominal (177 países),str,177,488
+market_segment,Segmento de mercado,Qualitativa nominal,str,8,0
+distribution_channel,Canal de distribuição,Qualitativa nominal,str,5,0
+is_repeated_guest,Hóspede recorrente (0/1),Qualitativa binária,int64,2,0
+previous_cancellations,Cancelamentos anteriores,Quantitativa discreta,int64,15,0
+previous_bookings_not_canceled,Reservas anteriores não canceladas,Quantitativa discreta,int64,73,0
+reserved_room_type,Tipo de quarto reservado,Qualitativa nominal (código),str,10,0
+assigned_room_type,Tipo de quarto atribuído,Qualitativa nominal (código),str,12,0
+booking_changes,Alterações na reserva,Quantitativa discreta,int64,21,0
+deposit_type,Tipo de depósito,Qualitativa nominal,str,3,0
+agent,ID do agente,Qualitativa nominal (ID),float64,333,16340
+company,ID da empresa,Qualitativa nominal (ID),float64,352,112593
+days_in_waiting_list,Dias em lista de espera,Quantitativa discreta,int64,128,0
+customer_type,Tipo de cliente,Qualitativa nominal,str,4,0
+adr,Diária média - ADR (€),Quantitativa contínua (€),float64,8879,0
+required_car_parking_spaces,Vagas de estacionamento,Quantitativa discreta,int64,5,0
+total_of_special_requests,Pedidos especiais,Quantitativa discreta,int64,6,0
+reservation_status,Status final,Qualitativa nominal (vazamento),str,3,0
+reservation_status_date,Data do status,Data (vazamento),str,926,0
