@@ -1,0 +1,1571 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório — Projeto Final AVD 2026.2</title><style>
+@page { size: A4; margin: 18mm 16mm 18mm 16mm;
+        @bottom-right { content: counter(page); font: 9pt system-ui, sans-serif; color: #898781; } }
+body { font-family: "Segoe UI", system-ui, sans-serif; font-size: 10.3pt; line-height: 1.45; color: #0b0b0b; }
+h1 { font-size: 20pt; margin: 0 0 4pt; } h2 { font-size: 15pt; margin: 18pt 0 6pt; border-bottom: 2px solid #2a78d6; padding-bottom: 2pt; }
+h3 { font-size: 12pt; margin: 12pt 0 4pt; } h4 { font-size: 10.5pt; margin: 8pt 0 2pt; }
+h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+.bloco { break-inside: avoid; page-break-inside: avoid; }
+p { margin: 4pt 0 6pt; text-align: justify; }
+.parte { page-break-before: always; font-size: 22pt; color: #2a78d6; border: none; margin-top: 0; }
+.quebra { page-break-before: always; }
+figure { margin: 8pt 0 10pt; page-break-inside: avoid; text-align: center; }
+figure img { max-width: 100%; max-height: 118mm; }
+figure.alta img { max-height: 170mm; }
+figcaption { font-size: 8.8pt; color: #52514e; text-align: left; margin-top: 3pt; }
+table { border-collapse: collapse; width: 100%; font-size: 8.6pt; margin: 6pt 0 10pt; page-break-inside: avoid; }
+th { background: #eeede8; text-align: left; } th, td { border: 1px solid #d9d8d2; padding: 3pt 5pt; vertical-align: top; }
+.nota { border-left: 3px solid #eb6834; background: #fbf7f4; padding: 5pt 9pt; margin: 4pt 0 12pt; font-size: 9.4pt; page-break-inside: avoid; }
+.nota p { margin: 2pt 0; }
+.destaque { background: #eef5fd; border-left: 3px solid #2a78d6; padding: 6pt 10pt; margin: 6pt 0 10pt; page-break-inside: avoid; }
+.capa { text-align: center; padding-top: 55mm; } .capa h1 { font-size: 26pt; } .capa p { text-align: center; }
+.sub { color: #52514e; } ul, ol { margin: 3pt 0 6pt 16pt; padding: 0; } li { margin: 1pt 0; }
+code { font-family: Consolas, monospace; font-size: 9pt; background: #f4f4f1; padding: 0 2pt; }
+.assinatura { margin-top: 26pt; display: flex; gap: 18pt; flex-wrap: wrap; }
+.assinatura div { flex: 1 1 45%; border-top: 1px solid #0b0b0b; padding-top: 3pt; margin-top: 26pt; font-size: 9.5pt; }
+</style></head><body><section class="capa">
+<p class="sub">Análise e Visualização de Dados (AVD) — 2026.2 · Avaliação II (AV2)</p>
+<h1>Projeto Final: Agrupamento, EDA e Dashboard Interativo</h1>
+<p style="font-size:13pt">Parte Comum: K-Means no dataset <b>Obesity</b> (UCI 544)<br>
+Parte Específica: <b>Por que os hóspedes cancelam?</b> — Hotel Booking Demand</p>
+<p style="margin-top:40mm"><b>Integrantes</b><br>Pedro de Melo Dhalia<br>Matheos de Oliveira Guerra<br>Miguel José França de Andrade</p>
+<p class="sub" style="margin-top:20mm">24/11/2026</p>
+</section><h2 class="quebra">Sumário</h2>
+<ol>
+<li>Introdução e organização do repositório</li>
+<li><b>Parte Comum</b> — EDA do dataset Obesity (4 pilares)</li>
+<li>Padronização e escolha das variáveis</li>
+<li>K-Means: Passada 1 (k livre) e Passada 2 (k fixo)</li>
+<li>Mapeamento, matrizes de confusão e métricas</li>
+<li>Discussão crítica</li>
+<li><b>Parte Específica</b> — problema, pergunta de pesquisa e público-alvo</li>
+<li>EDA do Hotel Booking Demand (4 pilares, faltantes e outliers)</li>
+<li>Visualizações exploratórias e notas analíticas</li>
+<li>Storytelling e visualizações explanatórias</li>
+<li>O risco é previsível? Modelo de classificação</li>
+<li>Dashboard em Streamlit</li>
+<li>Conclusões, limitações e uso de IA</li>
+</ol>
+<h2>1. Introdução e organização do repositório</h2>
+<p>Este relatório documenta as duas partes do Projeto Final. Na <b>Parte Comum</b>, exploramos o dataset <i>Obesity</i>,
+padronizamos as variáveis e aplicamos o K-Means em duas passadas (k escolhido pelo Método do Cotovelo e k igual ao número
+real de classes), avaliando os grupos por matrizes de confusão. Na <b>Parte Específica</b>, investigamos o cancelamento de
+reservas em dois hotéis portugueses, construímos uma história explanatória para a gestão do hotel e um dashboard interativo
+em Streamlit.</p>
+<p>Todo o código é reprodutível: os scripts de <code>src/</code> geram as figuras e tabelas de <code>out/</code> usadas neste
+relatório, e o dashboard usa as mesmas funções (os números batem). Bibliotecas: pandas, numpy, matplotlib, seaborn, plotly,
+scikit-learn e streamlit, em Python 3.12.</p>
+<table><tr><th>Caminho</th><th>Conteúdo</th></tr>
+<tr><td><code>notebooks/parte_comum/eda.ipynb</code>, <code>kmeans_metricas.ipynb</code></td><td>Parte Comum executada, com saídas e comentários</td></tr>
+<tr><td><code>src/parte_comum/eda.py · kmeans.py · metricas.py</code></td><td>Mesmas análises pela linha de comando (<code>--dataset obesity --modo livre|fixo</code>)</td></tr>
+<tr><td><code>src/parte_especifica/eda.py</code></td><td>EDA, figuras estáticas e modelo da Parte Específica</td></tr>
+<tr><td><code>src/parte_especifica/dashboard.py</code> + <code>app_pages/</code></td><td>Dashboard Streamlit (7 páginas, inclui a Parte Comum)</td></tr>
+<tr><td><code>out/parte_comum/</code>, <code>out/parte_especifica/</code></td><td>Figuras (PNG) e tabelas (CSV/JSON) geradas</td></tr>
+<tr><td><code>data/</code></td><td>Datasets e <code>baixar_dados.py</code></td></tr></table>
+<h2 class="parte">PARTE COMUM — Dataset Obesity</h2><h2>2. Análise exploratória (EDA)</h2>
+<p>O dataset <i>Estimation of obesity levels based on eating habits and physical condition</i> (UCI 544; Palechor &amp; de la Hoz
+Manotas, 2019) tem <b>2.111 pessoas</b> do México, Peru e Colômbia e <b>17 colunas</b>: 16 atributos e a classe
+<code>NObeyesdad</code> com 7 níveis. Segundo os autores, <b>77% das linhas foram geradas sinteticamente com SMOTE</b> e só 23%
+vêm do questionário web — fato que reaparece em toda a análise.</p>
+<h3>2.1 Pilar estrutural e qualidade dos dados</h3>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Coluna</th>
+      <th>Descrição</th>
+      <th>Tipo</th>
+      <th>Únicos</th>
+      <th>Faltantes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Gender</td>
+      <td>Gênero</td>
+      <td>Qualitativa nominal (binária)</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Age</td>
+      <td>Idade (anos)</td>
+      <td>Quantitativa contínua</td>
+      <td>1402</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Height</td>
+      <td>Altura (m)</td>
+      <td>Quantitativa contínua</td>
+      <td>1574</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Weight</td>
+      <td>Peso (kg)</td>
+      <td>Quantitativa contínua</td>
+      <td>1525</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>family_history_with_overweight</td>
+      <td>Histórico familiar de sobrepeso</td>
+      <td>Qualitativa nominal (binária)</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>FAVC</td>
+      <td>Come alimentos calóricos com frequência</td>
+      <td>Qualitativa nominal (binária)</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>FCVC</td>
+      <td>Frequência de consumo de vegetais (1=nunca, 2=às vezes, 3=sempre)</td>
+      <td>Quantitativa ordinal (escala 1–3)</td>
+      <td>810</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>NCP</td>
+      <td>Número de refeições principais por dia (1 a 4)</td>
+      <td>Quantitativa ordinal (escala 1–4)</td>
+      <td>635</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>CAEC</td>
+      <td>Come entre as refeições</td>
+      <td>Qualitativa ordinal (no &lt; Sometimes &lt; Frequently &lt; Always)</td>
+      <td>4</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>SMOKE</td>
+      <td>Fuma</td>
+      <td>Qualitativa nominal (binária)</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>CH2O</td>
+      <td>Água por dia (1=&lt;1L, 2=1–2L, 3=&gt;2L)</td>
+      <td>Quantitativa ordinal (escala 1–3)</td>
+      <td>1268</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>SCC</td>
+      <td>Monitora as calorias que consome</td>
+      <td>Qualitativa nominal (binária)</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>FAF</td>
+      <td>Frequência de atividade física (0=nenhuma ... 3=4–5 dias/semana)</td>
+      <td>Quantitativa ordinal (escala 0–3)</td>
+      <td>1190</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>TUE</td>
+      <td>Tempo usando dispositivos eletrônicos (0=0–2h, 1=3–5h, 2=&gt;5h)</td>
+      <td>Quantitativa ordinal (escala 0–2)</td>
+      <td>1129</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>CALC</td>
+      <td>Consumo de álcool</td>
+      <td>Qualitativa ordinal (no &lt; Sometimes &lt; Frequently &lt; Always)</td>
+      <td>4</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>MTRANS</td>
+      <td>Meio de transporte habitual</td>
+      <td>Qualitativa nominal (5 categorias)</td>
+      <td>5</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>NObeyesdad</td>
+      <td>Nível de obesidade (CLASSE)</td>
+      <td>Qualitativa ordinal (7 classes)</td>
+      <td>7</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>São 8 variáveis numéricas (3 contínuas e 5 escalas de questionário), 5 binárias, 2 ordinais de frequência, 1 nominal
+(MTRANS) e a classe, que é <b>ordinal</b> (ordenada pelo IMC). Não há valores ausentes. Encontramos duas questões de qualidade:</p><table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Etapa</th>
+      <th>Linhas</th>
+      <th>Diagnóstico</th>
+      <th>Tratamento</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Duplicatas</td>
+      <td>24</td>
+      <td>24 linhas idênticas a outra em todas as 17 colunas, todas na parte coletada pelo questionário web (valores inteiros). Coincidir em 17 respostas é improvável: o mais provável é a mesma pessoa ter enviado o formulário mais de uma vez.</td>
+      <td>Removidas (1,1% da base). Cópias dariam peso dobrado a esses pontos no cálculo dos centróides.</td>
+    </tr>
+    <tr>
+      <td>Inconsistência (dados sintéticos)</td>
+      <td>1580</td>
+      <td>FCVC, NCP, CH2O, FAF e TUE são respostas de questionário em escala inteira, mas aparecem com decimais (ex.: FCVC = 2,45) em ~60% das linhas — efeito da interpolação do SMOTE.</td>
+      <td>Arredondadas para o inteiro mais próximo, restaurando o significado da escala.</td>
+    </tr>
+    <tr>
+      <td>Faltantes</td>
+      <td>0</td>
+      <td>Nenhum valor ausente em nenhuma coluna.</td>
+      <td>Nenhum tratamento necessário.</td>
+    </tr>
+    <tr>
+      <td>Outliers</td>
+      <td>0</td>
+      <td>Regra de Tukey: 167 idades acima de ~35 anos, 1 altura (1,98 m) e 1 peso (173 kg). Todos são plausíveis (idade 14–61, altura 1,45–1,98 m, peso 39–173 kg). NCP e CH2O também 'acusam' centenas de outliers, mas só porque o IQR deles é 0 (escala discreta concentrada em um valor): a regra de Tukey não se aplica bem a escalas de 3–4 pontos.</td>
+      <td>Mantidos: são pessoas reais/plausíveis e as classes extremas (Obesidade III, Abaixo do peso) dependem justamente desses valores. A padronização reduz seu efeito de escala.</td>
+    </tr>
+  </tbody>
+</table><figure class=""><img src="../out/parte_comum/eda/04_inconsistencia_sintetica.png" alt="Figura 1 — Escalas de questionário com valores fracionários (rastro do SMOTE). Tratamento: arredondamento."><figcaption>Figura 1 — Escalas de questionário com valores fracionários (rastro do SMOTE). Tratamento: arredondamento.</figcaption></figure><h3>2.2 Pilar distribucional</h3>
+<figure class=""><img src="../out/parte_comum/eda/01_classes.png" alt="Figura 2 — Distribuição da classe: 7 níveis praticamente balanceados (12,8% a 16,8%), efeito do SMOTE."><figcaption>Figura 2 — Distribuição da classe: 7 níveis praticamente balanceados (12,8% a 16,8%), efeito do SMOTE.</figcaption></figure>
+<p>As classes estão quase balanceadas — algo improvável em dados reais de obesidade. Consequência: "chutar" sempre a classe
+mais comum acerta só <b>16,8%</b>, a linha de base para julgar o K-Means.</p>
+<figure class="alta"><img src="../out/parte_comum/eda/02_numericas.png" alt="Figura 3 — Distribuição das variáveis numéricas (ordinais já arredondadas)."><figcaption>Figura 3 — Distribuição das variáveis numéricas (ordinais já arredondadas).</figcaption></figure>
+<p><b>Idade</b> é fortemente assimétrica à direita (mediana 22,8 anos; assimetria +1,5): a amostra é jovem. <b>Altura</b> é
+aproximadamente simétrica; <b>peso</b> e <b>IMC</b> são espalhados de forma quase uniforme (13 a 51 kg/m²), de novo pelo
+balanceamento artificial. Nas escalas, 70% fazem 3 refeições, 53% bebem 1–2 L de água, 70% fazem pouca ou nenhuma atividade
+física (FAF 0–1).</p>
+<figure class=""><img src="../out/parte_comum/eda/03_categoricas.png" alt="Figura 4 — Distribuição das variáveis qualitativas."><figcaption>Figura 4 — Distribuição das variáveis qualitativas.</figcaption></figure>
+<p>Gênero é equilibrado (50% masculino); 82% têm histórico familiar de sobrepeso e 88% consomem alimentos calóricos com
+frequência. Fumar (2%), monitorar calorias (5%) e moto/bicicleta (&lt; 1%) são <b>muito raros</b> — o que terá efeito no K-Means.</p>
+<h3>2.3 Pilar relacional</h3>
+<figure class="alta"><img src="../out/parte_comum/eda/05_correlacao.png" alt="Figura 5 — Correlação de Spearman entre todas as variáveis codificadas e a classe (0 = Abaixo do peso … 6 = Obesidade III)."><figcaption>Figura 5 — Correlação de Spearman entre todas as variáveis codificadas e a classe (0 = Abaixo do peso … 6 = Obesidade III).</figcaption></figure>
+<p>Usamos Spearman porque metade das variáveis é ordinal. <b>A classe é quase uma função do IMC (ρ = 0,99)</b> e do peso
+(ρ = 0,92): os níveis de obesidade são <i>definidos</i> por faixas de IMC. Entre os hábitos, as associações com a classe são
+moderadas ou fracas: histórico familiar 0,50; idade 0,40; beliscar entre refeições −0,37; alimentos calóricos 0,25;
+vegetais 0,21; atividade física −0,20.</p>
+<figure class=""><img src="../out/parte_comum/eda/07_imc_por_classe.png" alt="Figura 6 — IMC por classe com os cortes da OMS: as classes são faixas de IMC; Sobrepeso I e II se sobrepõem."><figcaption>Figura 6 — IMC por classe com os cortes da OMS: as classes são faixas de IMC; Sobrepeso I e II se sobrepõem.</figcaption></figure>
+<figure class=""><img src="../out/parte_comum/eda/08_altura_peso.png" alt="Figura 7 — Altura × peso por classe com curvas de IMC constante."><figcaption>Figura 7 — Altura × peso por classe com curvas de IMC constante.</figcaption></figure>
+<p>Sobrepeso I (IMC 22,8–28,8) e Sobrepeso II (25,7–30,4) <b>se sobrepõem</b> — e a própria OMS não divide sobrepeso em dois
+níveis. Obesidade II e III também se tocam (34–39,8 vs. 36,8–50,8).</p>
+<figure class="alta"><img src="../out/parte_comum/eda/09_categoricas_por_classe.png" alt="Figura 8 — Variáveis qualitativas por classe (barras 100%)."><figcaption>Figura 8 — Variáveis qualitativas por classe (barras 100%).</figcaption></figure>
+<p><b>Artefato do SMOTE:</b> Obesidade II tem 295 homens e 2 mulheres; Obesidade III tem 323 mulheres e 1 homem, e 323 das
+324 pessoas dessa classe têm exatamente os mesmos valores de álcool, beliscar e transporte. O SMOTE criou essas classes a partir
+de poucos casos reais, copiando seus atributos — o que as torna artificialmente homogêneas.</p>
+<figure class=""><img src="../out/parte_comum/eda/06_numericas_por_classe.png" alt="Figura 9 — Variáveis numéricas por classe: o peso separa as classes; os hábitos variam pouco."><figcaption>Figura 9 — Variáveis numéricas por classe: o peso separa as classes; os hábitos variam pouco.</figcaption></figure>
+<h3>2.4 Pilar de outliers</h3>
+<figure class=""><img src="../out/parte_comum/eda/10_outliers.png" alt="Figura 10 — Variáveis numéricas padronizadas; pontos laranja fora de 1,5×IQR."><figcaption>Figura 10 — Variáveis numéricas padronizadas; pontos laranja fora de 1,5×IQR.</figcaption></figure>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Variável</th>
+      <th>q1</th>
+      <th>q3</th>
+      <th>Lim. inf.</th>
+      <th>Lim. sup.</th>
+      <th>Fora de 1,5×IQR</th>
+      <th>|z| &gt; 3</th>
+      <th>min</th>
+      <th>max</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Age</td>
+      <td>19,92</td>
+      <td>26,00</td>
+      <td>10,79</td>
+      <td>35,13</td>
+      <td>167</td>
+      <td>23</td>
+      <td>14,00</td>
+      <td>61,00</td>
+    </tr>
+    <tr>
+      <td>Height</td>
+      <td>1,63</td>
+      <td>1,77</td>
+      <td>1,42</td>
+      <td>1,98</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1,45</td>
+      <td>1,98</td>
+    </tr>
+    <tr>
+      <td>Weight</td>
+      <td>66,00</td>
+      <td>108,02</td>
+      <td>2,98</td>
+      <td>171,04</td>
+      <td>1</td>
+      <td>1</td>
+      <td>39,00</td>
+      <td>173,00</td>
+    </tr>
+    <tr>
+      <td>FCVC</td>
+      <td>2,00</td>
+      <td>3,00</td>
+      <td>0,50</td>
+      <td>4,50</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1,00</td>
+      <td>3,00</td>
+    </tr>
+    <tr>
+      <td>NCP</td>
+      <td>3,00</td>
+      <td>3,00</td>
+      <td>3,00</td>
+      <td>3,00</td>
+      <td>621</td>
+      <td>0</td>
+      <td>1,00</td>
+      <td>4,00</td>
+    </tr>
+    <tr>
+      <td>CH2O</td>
+      <td>2,00</td>
+      <td>2,00</td>
+      <td>2,00</td>
+      <td>2,00</td>
+      <td>980</td>
+      <td>0</td>
+      <td>1,00</td>
+      <td>3,00</td>
+    </tr>
+    <tr>
+      <td>FAF</td>
+      <td>0,00</td>
+      <td>2,00</td>
+      <td>-3,00</td>
+      <td>5,00</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0,00</td>
+      <td>3,00</td>
+    </tr>
+    <tr>
+      <td>TUE</td>
+      <td>0,00</td>
+      <td>1,00</td>
+      <td>-1,50</td>
+      <td>2,50</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0,00</td>
+      <td>2,00</td>
+    </tr>
+    <tr>
+      <td>IMC</td>
+      <td>24,37</td>
+      <td>36,10</td>
+      <td>6,78</td>
+      <td>53,69</td>
+      <td>0</td>
+      <td>0</td>
+      <td>13,00</td>
+      <td>50,81</td>
+    </tr>
+  </tbody>
+</table>
+<p><b>Decisão: nenhum outlier removido.</b> As 167 idades acima de ~35 anos, a altura de 1,98 m e o peso de 173 kg são
+plausíveis e definem justamente as classes extremas. NCP e CH2O "acusam" centenas de outliers só porque o IQR deles é zero (escala
+de 3–4 pontos concentrada em um valor) — a regra de Tukey não se aplica bem a elas. A padronização controla o efeito de escala.</p>
+<div class="destaque"><b>Síntese da EDA.</b> Base limpa com 2.087 pessoas. A classe é, na prática, o IMC discretizado; hábitos
+têm associação fraca a moderada com ela; o balanceamento e a homogeneidade de algumas classes são artefatos do SMOTE.
+Expectativa: o K-Means vai refletir gênero e peso mais do que as 7 classes.</div><h2 class="quebra">3. Padronização e escolha das variáveis</h2>
+<p><b>Variáveis usadas (15):</b> as 8 numéricas, as 5 binárias codificadas como 0/1 e as 2 ordinais de frequência (CAEC e CALC)
+codificadas de 0 (<i>no</i>) a 3 (<i>Always</i>), preservando a ordem. <b>MTRANS foi excluída</b>: é nominal sem ordem (virar
+0–4 inventaria distâncias falsas) e o <i>one-hot</i> transformaria uma única variável em 5 dimensões, dando a ela ~5× o peso
+das demais. A classe, obviamente, não entra.</p>
+<p><b>Por que padronizar?</b> O K-Means atribui cada ponto ao centróide mais próximo pela <b>distância euclidiana</b>. Sem
+padronização, cada variável pesa proporcionalmente à sua escala: o peso tem variância ≈ 686 kg², a altura ≈ 0,009 m² e as escalas
+de questionário ≈ 0,3–0,8. A distância seria praticamente só a diferença de peso, e trocar a unidade (kg → g) mudaria os
+grupos. Com o <b>z-score</b> (<code>StandardScaler</code>: z = (x − média)/desvio), todas as variáveis passam a ter média 0 e
+desvio 1 e contribuem igualmente.</p>
+<p><b>Limitação registrada:</b> variáveis binárias muito raras (fumar: 2%; monitorar calorias: 5%) também ganham valores z
+altos (≈ +6,8 e +4,6) após a padronização — e, como veremos, o K-Means dedica grupos a elas.</p><h2>4. K-Means em duas passadas</h2>
+<p>Configuração: <code>KMeans(n_init=20, random_state=42)</code> do scikit-learn.</p>
+<h3>4.1 Passada 1 — k livre (Método do Cotovelo)</h3>
+<p>Rodamos k = 1 a 10 (k = 1 como linha de base: inércia total). Para não escolher o cotovelo "no olho", usamos um critério
+objetivo — o ponto da curva <b>mais distante da reta</b> que liga o primeiro ao último ponto (<i>kneedle</i>).</p>
+<figure class=""><img src="../out/parte_comum/kmeans/livre_cotovelo.png" alt="Figura 11 — Método do Cotovelo e ganho marginal de cada grupo adicional."><figcaption>Figura 11 — Método do Cotovelo e ganho marginal de cada grupo adicional.</figcaption></figure>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>k</th>
+      <th>Inércia</th>
+      <th>Silhueta</th>
+      <th>Queda vs k−1 (%)</th>
+      <th>Dist. à reta</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>31305</td>
+      <td>—</td>
+      <td>—</td>
+      <td>0,000</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>27637</td>
+      <td>0,207</td>
+      <td>11,7</td>
+      <td>0,101</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>25341</td>
+      <td>0,108</td>
+      <td>8,3</td>
+      <td>0,135</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>23330</td>
+      <td>0,121</td>
+      <td>7,9</td>
+      <td>0,154</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>21904</td>
+      <td>0,116</td>
+      <td>6,1</td>
+      <td>0,145</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>20519</td>
+      <td>0,131</td>
+      <td>6,3</td>
+      <td>0,135</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>19087</td>
+      <td>0,148</td>
+      <td>7,0</td>
+      <td>0,126</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>18100</td>
+      <td>0,156</td>
+      <td>5,2</td>
+      <td>0,096</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>17381</td>
+      <td>0,164</td>
+      <td>4,0</td>
+      <td>0,052</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>16846</td>
+      <td>0,150</td>
+      <td>3,1</td>
+      <td>0,000</td>
+    </tr>
+  </tbody>
+</table>
+<p>A curva é <b>suave</b>, sem cotovelo nítido — sinal de que os dados não têm grupos bem separados. O critério indica
+<b>k = 4</b>, estável em 5 sementes; depois dele o ganho marginal cai de ~8% para ~6% por grupo. Sem o k = 1, o critério
+oscila entre 6 e 7 conforme a semente — mais uma evidência de que não há um k "natural" forte. A silhueta (complementar) fica
+abaixo de 0,25 em todo k.</p>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Semente</th>
+      <th>k (curva 1–10)</th>
+      <th>k (curva 2–10)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>4</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>4</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>42</td>
+      <td>4</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>123</td>
+      <td>4</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>2026</td>
+      <td>4</td>
+      <td>6</td>
+    </tr>
+  </tbody>
+</table>
+<figure class=""><img src="../out/parte_comum/kmeans/livre_pca.png" alt="Figura 12 — Passada 1 (k = 4) na projeção PCA (esq.) e classes reais (dir.)."><figcaption>Figura 12 — Passada 1 (k = 4) na projeção PCA (esq.) e classes reais (dir.).</figcaption></figure>
+<figure class=""><img src="../out/parte_comum/kmeans/livre_centroides.png" alt="Figura 13 — Perfil dos centróides da Passada 1 em z-score."><figcaption>Figura 13 — Perfil dos centróides da Passada 1 em z-score.</figcaption></figure>
+<p><b>Quem são os 4 grupos:</b> G0 — jovens (21 anos), leves (57 kg), sem histórico familiar → Abaixo do peso/Normal;
+G1 — <b>mulheres</b> (96%) pesadas (99 kg) → 322 das 324 pessoas com Obesidade III; G2 — os 44 <b>fumantes</b>;
+G3 — <b>homens</b> (99%) altos e pesados (93 kg) → Obesidade II. O K-Means separou por <b>gênero + peso</b>, não pelos 7 níveis.</p>
+<h3>4.2 Passada 2 — k fixo = 7 (número real de classes)</h3>
+<figure class=""><img src="../out/parte_comum/kmeans/fixo_pca.png" alt="Figura 14 — Passada 2 (k = 7) na projeção PCA e classes reais."><figcaption>Figura 14 — Passada 2 (k = 7) na projeção PCA e classes reais.</figcaption></figure>
+<figure class=""><img src="../out/parte_comum/kmeans/fixo_centroides.png" alt="Figura 15 — Perfil dos centróides da Passada 2 em z-score."><figcaption>Figura 15 — Perfil dos centróides da Passada 2 em z-score.</figcaption></figure>
+<p>Com 7 grupos surgem perfis mais finos, mas <b>dois grupos são "gastos" com atributos raros</b>: G6 reúne os 44 fumantes
+(z = +6,8) e G4 quem monitora calorias (z = +4,6). G0 é quase puro: 321 das 367 pessoas são Obesidade III.</p><h2 class="quebra">5. Mapeamento, matrizes de confusão e métricas</h2>
+<p>Cada grupo recebe o rótulo da <b>classe real majoritária</b> dentro dele. A tabela de contingência (classe real × grupo) é
+<b>retangular</b> (7 × k); a matriz de confusão (classe real × classe mapeada) é 7 × 7. As métricas foram calculadas
+<b>diretamente da matriz</b> e conferidas com o scikit-learn: acurácia = diagonal/total; precisão de X = acertos de X / total da
+coluna X; recall de X = acertos de X / total da linha X. Classe nunca prevista tem precisão 0/0 (indefinida, "—"), contada como 0
+na média macro.</p>
+<h3>5.1 Passada 1 (k = 4)</h3>
+<figure class=""><img src="../out/parte_comum/metricas/livre_contingencia.png" alt="Figura 16 — Passada 1: tabela de contingência 7 × 4 (em negrito, a classe majoritária de cada grupo)."><figcaption>Figura 16 — Passada 1: tabela de contingência 7 × 4 (em negrito, a classe majoritária de cada grupo).</figcaption></figure>
+<figure class=""><img src="../out/parte_comum/metricas/livre_matriz_confusao.png" alt="Figura 17 — Passada 1: matriz de confusão (contagem e % da linha)."><figcaption>Figura 17 — Passada 1: matriz de confusão (contagem e % da linha).</figcaption></figure>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Classe</th>
+      <th>Reais</th>
+      <th>Previstos</th>
+      <th>Acertos</th>
+      <th>Precisão</th>
+      <th>Recall</th>
+      <th>F1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Abaixo do peso</td>
+      <td>267</td>
+      <td>481</td>
+      <td>186</td>
+      <td>0,39</td>
+      <td>0,70</td>
+      <td>0,50</td>
+    </tr>
+    <tr>
+      <td>Peso normal</td>
+      <td>282</td>
+      <td>0</td>
+      <td>0</td>
+      <td>—</td>
+      <td>0,00</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Sobrepeso I</td>
+      <td>276</td>
+      <td>0</td>
+      <td>0</td>
+      <td>—</td>
+      <td>0,00</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Sobrepeso II</td>
+      <td>290</td>
+      <td>0</td>
+      <td>0</td>
+      <td>—</td>
+      <td>0,00</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Obesidade I</td>
+      <td>351</td>
+      <td>0</td>
+      <td>0</td>
+      <td>—</td>
+      <td>0,00</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Obesidade II</td>
+      <td>297</td>
+      <td>938</td>
+      <td>269</td>
+      <td>0,29</td>
+      <td>0,91</td>
+      <td>0,44</td>
+    </tr>
+    <tr>
+      <td>Obesidade III</td>
+      <td>324</td>
+      <td>668</td>
+      <td>322</td>
+      <td>0,48</td>
+      <td>0,99</td>
+      <td>0,65</td>
+    </tr>
+  </tbody>
+</table>
+<h3>5.2 Passada 2 (k = 7)</h3>
+<figure class=""><img src="../out/parte_comum/metricas/fixo_contingencia.png" alt="Figura 18 — Passada 2: tabela de contingência 7 × 7."><figcaption>Figura 18 — Passada 2: tabela de contingência 7 × 7.</figcaption></figure>
+<figure class=""><img src="../out/parte_comum/metricas/fixo_matriz_confusao.png" alt="Figura 19 — Passada 2: matriz de confusão."><figcaption>Figura 19 — Passada 2: matriz de confusão.</figcaption></figure>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Classe</th>
+      <th>Reais</th>
+      <th>Previstos</th>
+      <th>Acertos</th>
+      <th>Precisão</th>
+      <th>Recall</th>
+      <th>F1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Abaixo do peso</td>
+      <td>267</td>
+      <td>285</td>
+      <td>136</td>
+      <td>0,48</td>
+      <td>0,51</td>
+      <td>0,49</td>
+    </tr>
+    <tr>
+      <td>Peso normal</td>
+      <td>282</td>
+      <td>0</td>
+      <td>0</td>
+      <td>—</td>
+      <td>0,00</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Sobrepeso I</td>
+      <td>276</td>
+      <td>91</td>
+      <td>36</td>
+      <td>0,40</td>
+      <td>0,13</td>
+      <td>0,20</td>
+    </tr>
+    <tr>
+      <td>Sobrepeso II</td>
+      <td>290</td>
+      <td>196</td>
+      <td>71</td>
+      <td>0,36</td>
+      <td>0,24</td>
+      <td>0,29</td>
+    </tr>
+    <tr>
+      <td>Obesidade I</td>
+      <td>351</td>
+      <td>371</td>
+      <td>141</td>
+      <td>0,38</td>
+      <td>0,40</td>
+      <td>0,39</td>
+    </tr>
+    <tr>
+      <td>Obesidade II</td>
+      <td>297</td>
+      <td>777</td>
+      <td>231</td>
+      <td>0,30</td>
+      <td>0,78</td>
+      <td>0,43</td>
+    </tr>
+    <tr>
+      <td>Obesidade III</td>
+      <td>324</td>
+      <td>367</td>
+      <td>321</td>
+      <td>0,87</td>
+      <td>0,99</td>
+      <td>0,93</td>
+    </tr>
+  </tbody>
+</table>
+<figure class=""><img src="../out/parte_comum/metricas/comparacao_precisao_recall.png" alt="Figura 20 — Precisão e recall por classe nas duas passadas."><figcaption>Figura 20 — Precisão e recall por classe nas duas passadas.</figcaption></figure>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Passada</th>
+      <th>k</th>
+      <th>Acurácia</th>
+      <th>Precisão macro</th>
+      <th>Recall macro</th>
+      <th>ARI</th>
+      <th>NMI</th>
+      <th>Classes nunca previstas</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1 — k livre (cotovelo)</td>
+      <td>4</td>
+      <td>37,2%</td>
+      <td>0,165</td>
+      <td>0,371</td>
+      <td>0,183</td>
+      <td>0,271</td>
+      <td>Peso normal, Sobrepeso I, Sobrepeso II, Obesidade I</td>
+    </tr>
+    <tr>
+      <td>2 — k fixo (nº de classes)</td>
+      <td>7</td>
+      <td>44,8%</td>
+      <td>0,398</td>
+      <td>0,436</td>
+      <td>0,243</td>
+      <td>0,338</td>
+      <td>Peso normal</td>
+    </tr>
+  </tbody>
+</table>
+<p><b>Leitura.</b> Passada 1: acurácia 37,2% com 4 classes nunca previstas; só Obesidade III (recall 0,99) e Abaixo do
+peso (0,70) são bem recuperadas. Passada 2: acurácia 44,8% — 2,7× a linha de base de 16,8% —, 6 classes previstas;
+Obesidade III com precisão 0,87 e recall 0,99. <b>Peso normal nunca é previsto</b>: essas pessoas se espalham pelos grupos e não
+são maioria em nenhum. Os erros se concentram em <b>classes vizinhas</b> (Sobrepeso I ↔ II ↔ Obesidade I; Abaixo do peso ↔
+Normal), seguindo a ordem do IMC. O ARI (que desconta o acaso) sobe de 0,18 para 0,24: concordância real, mas baixa.</p>
+<p><i>Importante:</i> o K-Means nunca viu os rótulos; a "acurácia" mede a <b>coincidência</b> entre grupos descobertos e
+classes conhecidas, não um acerto de previsão.</p><h2 class="quebra">6. Discussão crítica</h2>
+<h3>6.1 Passada 1 (k livre) × Passada 2 (k fixo): qual gerou grupos mais coerentes?</h3>
+<ul>
+<li><b>Coerência com as classes reais:</b> a Passada 2 vence em tudo — acurácia (44,8% vs 37,2%), precisão macro (0,40 vs 0,17),
+recall macro (0,44 vs 0,37), ARI (0,24 vs 0,18). Era esperado: 7 grupos dão "vagas" para mais classes.</li>
+<li><b>Coerência interna:</b> nenhuma é boa. Silhueta baixa nas duas (0,12 vs 0,15) e cotovelo sem joelho claro. Os 4 grupos
+do cotovelo fazem sentido <b>como perfis</b> (jovens leves, mulheres pesadas, homens pesados, fumantes) — só não são as classes
+de obesidade.</li>
+<li><b>Conclusão:</b> os dados têm estrutura mais forte em <b>gênero + peso</b> do que nos 7 níveis. A Passada 2 só se aproxima
+das classes porque é "forçada" a 7 grupos, e ainda gasta 2 deles com fumantes e com quem monitora calorias. O k do cotovelo
+(4) não bater com o número de classes (7) não é erro: é um resultado sobre a estrutura dos dados.</li>
+</ul>
+<h3>6.2 A granularidade das classes faz sentido do ponto de vista dos dados?</h3>
+<p>Reavaliamos <b>os mesmos agrupamentos</b> contra versões mais grossas das classes:</p>
+<h4>Passada 1 (k = 4)</h4><table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Classes reavaliadas</th>
+      <th>Nº</th>
+      <th>Acurácia</th>
+      <th>ARI</th>
+      <th>NMI</th>
+      <th>Linha de base</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>7 classes originais</td>
+      <td>7</td>
+      <td>37,2%</td>
+      <td>0,183</td>
+      <td>0,271</td>
+      <td>16,8%</td>
+    </tr>
+    <tr>
+      <td>6 classes (Sobrepeso I + II)</td>
+      <td>6</td>
+      <td>39,5%</td>
+      <td>0,185</td>
+      <td>0,285</td>
+      <td>27,1%</td>
+    </tr>
+    <tr>
+      <td>4 classes OMS (Abaixo, Normal, Sobrepeso, Obesidade)</td>
+      <td>4</td>
+      <td>55,1%</td>
+      <td>0,171</td>
+      <td>0,211</td>
+      <td>46,6%</td>
+    </tr>
+    <tr>
+      <td>3 classes (Abaixo/Normal, Sobrepeso, Obesidade)</td>
+      <td>3</td>
+      <td>63,4%</td>
+      <td>0,192</td>
+      <td>0,222</td>
+      <td>46,6%</td>
+    </tr>
+  </tbody>
+</table>
+<h4>Passada 2 (k = 7)</h4><table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Classes reavaliadas</th>
+      <th>Nº</th>
+      <th>Acurácia</th>
+      <th>ARI</th>
+      <th>NMI</th>
+      <th>Linha de base</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>7 classes originais</td>
+      <td>7</td>
+      <td>44,8%</td>
+      <td>0,243</td>
+      <td>0,338</td>
+      <td>16,8%</td>
+    </tr>
+    <tr>
+      <td>6 classes (Sobrepeso I + II)</td>
+      <td>6</td>
+      <td>46,8%</td>
+      <td>0,235</td>
+      <td>0,344</td>
+      <td>27,1%</td>
+    </tr>
+    <tr>
+      <td>4 classes OMS (Abaixo, Normal, Sobrepeso, Obesidade)</td>
+      <td>4</td>
+      <td>57,9%</td>
+      <td>0,148</td>
+      <td>0,216</td>
+      <td>46,6%</td>
+    </tr>
+    <tr>
+      <td>3 classes (Abaixo/Normal, Sobrepeso, Obesidade)</td>
+      <td>3</td>
+      <td>64,3%</td>
+      <td>0,152</td>
+      <td>0,221</td>
+      <td>46,6%</td>
+    </tr>
+  </tbody>
+</table>
+<ul>
+<li>Juntar <b>Sobrepeso I + II</b> melhora a acurácia (37,2% → 39,5% e 44,8% → 46,8%) sem piorar o ARI: os dados <b>não
+distinguem</b> esses dois níveis (faixas de IMC sobrepostas; a OMS não faz essa divisão).</li>
+<li>Com as 4 classes da OMS a acurácia sobe para 55–58%, mas a linha de base também sobe (46,6%) e o ARI <b>não</b> melhora —
+juntar classes facilita a acurácia "de graça".</li>
+<li>Abaixo do peso × Normal e Sobrepeso II × Obesidade I também se misturam: a fronteira é um corte arbitrário numa variável
+contínua (IMC), não uma separação natural.</li>
+</ul>
+<h3>6.3 O que define a classe?</h3>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Variáveis usadas (k = 7)</th>
+      <th>Nº</th>
+      <th>Acurácia</th>
+      <th>ARI</th>
+      <th>Silhueta</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>15 variáveis (usado)</td>
+      <td>15</td>
+      <td>44,8%</td>
+      <td>0,243</td>
+      <td>0,148</td>
+    </tr>
+    <tr>
+      <td>15 + MTRANS one-hot (20)</td>
+      <td>20</td>
+      <td>40,7%</td>
+      <td>0,213</td>
+      <td>0,136</td>
+    </tr>
+    <tr>
+      <td>Só hábitos e perfil (sem Altura/Peso)</td>
+      <td>13</td>
+      <td>39,4%</td>
+      <td>0,181</td>
+      <td>0,147</td>
+    </tr>
+    <tr>
+      <td>Só Altura e Peso</td>
+      <td>2</td>
+      <td>44,8%</td>
+      <td>0,243</td>
+      <td>0,387</td>
+    </tr>
+  </tbody>
+</table>
+<p>Só <b>altura e peso</b> dão a mesma acurácia que as 15 variáveis (44,8%) com silhueta 2,6× maior: a classe é o IMC. Só
+hábitos e perfil ainda acertam 39%, parte por causa do artefato "Obesidade III = mulheres com hábitos idênticos". Incluir MTRANS
+por one-hot <b>piora</b> (40,7%), confirmando a decisão de excluí-la. (Esta tabela não foi usada para escolher variáveis — isso
+seria usar a classe para ajustar um método não supervisionado —, apenas para a discussão.)</p>
+<div class="destaque"><b>Conclusões da Parte Comum.</b> (1) A granularidade de 7 classes não é sustentada pelos dados como
+estrutura natural; Sobrepeso I e II são indistinguíveis e uma divisão em 4–5 níveis (como a da OMS) seria mais defensável.
+(2) O K-Means mede semelhança global entre pessoas, enquanto a classe depende de 2 variáveis — por isso o agrupamento revela
+outras estruturas reais (gênero, fumo). (3) Parte do "acerto" em Obesidade III é artefato do SMOTE.</div><h2 class="parte">PARTE ESPECÍFICA — Cancelamento de reservas de hotel</h2><h2>7. Problema, pergunta de pesquisa e público-alvo</h2>
+<p><b>Dataset:</b> <i>Hotel Booking Demand</i> (Kaggle, jessemostipak; artigo original de Antonio, Almeida &amp; Nunes, 2019,
+<i>Data in Brief</i> 22). <b>119.390 reservas × 32 colunas</b>,
+quantitativas e qualitativas, de dois hotéis em Portugal — um hotel urbano (Lisboa) e um resort (Algarve) — com chegadas
+de julho de 2015 a agosto de 2017. <b>Tipo de problema: classificação</b> (alvo <code>is_canceled</code>).</p>
+<div class="destaque"><p><b>Pergunta de pesquisa.</b> Quais características de uma reserva, já conhecidas no momento em que ela é feita, indicam maior risco de cancelamento — e esse risco é previsível o suficiente para orientar a política de reservas do hotel?</p>
+<p><b>Hipótese.</b> Reservas feitas com muita antecedência e sem sinais de compromisso do hóspede (nenhum pedido especial, cliente novo, sem relação prévia com o hotel) cancelam bem mais do que a média.</p></div>
+<p><b>Público-alvo.</b> Gestão dos dois hotéis — gerente geral e gerente de receitas/reservas (revenue manager). São pessoas de negócio, não técnicas: querem saber ONDE está o risco e O QUE FAZER (política de depósito, overbooking, contato de confirmação). Por isso as visualizações explanatórias usam poucos elementos, uma cor de destaque, números escritos no próprio gráfico e títulos que já dizem a conclusão.</p>
+
+<h2>8. EDA — estrutura, qualidade, faltantes e outliers</h2>
+<h3>8.1 Pilar estrutural</h3>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Coluna</th>
+      <th>Descrição</th>
+      <th>Tipo</th>
+      <th>Únicos</th>
+      <th>NaN</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>hotel</td>
+      <td>Hotel</td>
+      <td>Qualitativa nominal</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>is_canceled</td>
+      <td>Cancelada (0/1)</td>
+      <td>Qualitativa binária (ALVO)</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>lead_time</td>
+      <td>Antecedência (dias)</td>
+      <td>Quantitativa discreta</td>
+      <td>479</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>arrival_date_year</td>
+      <td>Ano de chegada</td>
+      <td>Quantitativa discreta (tempo)</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>arrival_date_month</td>
+      <td>Mês de chegada</td>
+      <td>Qualitativa ordinal (tempo)</td>
+      <td>12</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>arrival_date_week_number</td>
+      <td>Semana do ano</td>
+      <td>Quantitativa discreta (tempo)</td>
+      <td>53</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>arrival_date_day_of_month</td>
+      <td>Dia do mês</td>
+      <td>Quantitativa discreta (tempo)</td>
+      <td>31</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>stays_in_weekend_nights</td>
+      <td>Noites de fim de semana</td>
+      <td>Quantitativa discreta</td>
+      <td>17</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>stays_in_week_nights</td>
+      <td>Noites de semana</td>
+      <td>Quantitativa discreta</td>
+      <td>35</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>adults</td>
+      <td>Adultos</td>
+      <td>Quantitativa discreta</td>
+      <td>14</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>children</td>
+      <td>Crianças</td>
+      <td>Quantitativa discreta</td>
+      <td>5</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>babies</td>
+      <td>Bebês</td>
+      <td>Quantitativa discreta</td>
+      <td>5</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>meal</td>
+      <td>Regime de refeição</td>
+      <td>Qualitativa nominal</td>
+      <td>5</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>country</td>
+      <td>País de origem</td>
+      <td>Qualitativa nominal (177 países)</td>
+      <td>177</td>
+      <td>488</td>
+    </tr>
+    <tr>
+      <td>market_segment</td>
+      <td>Segmento de mercado</td>
+      <td>Qualitativa nominal</td>
+      <td>8</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>distribution_channel</td>
+      <td>Canal de distribuição</td>
+      <td>Qualitativa nominal</td>
+      <td>5</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>is_repeated_guest</td>
+      <td>Hóspede recorrente (0/1)</td>
+      <td>Qualitativa binária</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>previous_cancellations</td>
+      <td>Cancelamentos anteriores</td>
+      <td>Quantitativa discreta</td>
+      <td>15</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>previous_bookings_not_canceled</td>
+      <td>Reservas anteriores não canceladas</td>
+      <td>Quantitativa discreta</td>
+      <td>73</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>reserved_room_type</td>
+      <td>Tipo de quarto reservado</td>
+      <td>Qualitativa nominal (código)</td>
+      <td>10</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>assigned_room_type</td>
+      <td>Tipo de quarto atribuído</td>
+      <td>Qualitativa nominal (código)</td>
+      <td>12</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>booking_changes</td>
+      <td>Alterações na reserva</td>
+      <td>Quantitativa discreta</td>
+      <td>21</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>deposit_type</td>
+      <td>Tipo de depósito</td>
+      <td>Qualitativa nominal</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>agent</td>
+      <td>ID do agente</td>
+      <td>Qualitativa nominal (ID)</td>
+      <td>333</td>
+      <td>16340</td>
+    </tr>
+    <tr>
+      <td>company</td>
+      <td>ID da empresa</td>
+      <td>Qualitativa nominal (ID)</td>
+      <td>352</td>
+      <td>112593</td>
+    </tr>
+    <tr>
+      <td>days_in_waiting_list</td>
+      <td>Dias em lista de espera</td>
+      <td>Quantitativa discreta</td>
+      <td>128</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>customer_type</td>
+      <td>Tipo de cliente</td>
+      <td>Qualitativa nominal</td>
+      <td>4</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>adr</td>
+      <td>Diária média - ADR (€)</td>
+      <td>Quantitativa contínua (€)</td>
+      <td>8879</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>required_car_parking_spaces</td>
+      <td>Vagas de estacionamento</td>
+      <td>Quantitativa discreta</td>
+      <td>5</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>total_of_special_requests</td>
+      <td>Pedidos especiais</td>
+      <td>Quantitativa discreta</td>
+      <td>6</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>reservation_status</td>
+      <td>Status final</td>
+      <td>Qualitativa nominal (vazamento)</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>reservation_status_date</td>
+      <td>Data do status</td>
+      <td>Data (vazamento)</td>
+      <td>926</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>Há 16 variáveis quantitativas, 15 qualitativas e 1 data. <code>reservation_status</code> e
+<code>reservation_status_date</code> registram o desfecho (vazamento do alvo) e não entram em análises de causa nem no modelo.
+Os nomes originais das colunas foram mantidos; os valores foram traduzidos para português e as variáveis derivadas
+(total de noites, de hóspedes, faixa de antecedência, receita estimada etc.) têm nomes em português sem acentos.</p>
+<h3>8.2 Dados faltantes: mecanismo e tratamento</h3>
+<figure class=""><img src="../out/parte_especifica/figuras/q1_faltantes.png" alt="Figura 21 — Valores ausentes por variável e mecanismo de ausência diagnosticado."><figcaption>Figura 21 — Valores ausentes por variável e mecanismo de ausência diagnosticado.</figcaption></figure>
+<div class="nota"><p><b>O que mostra.</b> Percentual de linhas com valor ausente (NaN ou o rótulo &#x27;Undefined&#x27;) em cada variável, colorido pelo mecanismo de ausência que diagnosticamos.</p><p><b>Insight.</b> Os dois maiores &#x27;buracos&#x27; (company 94%, agent 14%) não são falhas: são ausências ESTRUTURAIS — reservas sem empresa ou sem agente. Viraram as variáveis tem_empresa e tem_agente, que inclusive ajudam a explicar o cancelamento (17,5% com empresa vs. 38,2% sem). country (0,4%) é MAR: concentrado no resort e em reservas corporativas/diretas que quase não cancelam (13,7%) — remover essas linhas enviesaria a base.</p><p><b>Por que este gráfico.</b> Barras horizontais ordenadas permitem comparar magnitudes muito diferentes (94% a 0,002%) com os nomes das variáveis legíveis; a cor codifica a categoria do mecanismo, não uma quantidade.</p></div>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Coluna</th>
+      <th>NaN</th>
+      <th>'Undefined'</th>
+      <th>Total</th>
+      <th>% linhas</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>company</td>
+      <td>112593</td>
+      <td>0</td>
+      <td>112593</td>
+      <td>94,307%</td>
+    </tr>
+    <tr>
+      <td>agent</td>
+      <td>16340</td>
+      <td>0</td>
+      <td>16340</td>
+      <td>13,686%</td>
+    </tr>
+    <tr>
+      <td>meal</td>
+      <td>0</td>
+      <td>1169</td>
+      <td>1169</td>
+      <td>0,979%</td>
+    </tr>
+    <tr>
+      <td>country</td>
+      <td>488</td>
+      <td>0</td>
+      <td>488</td>
+      <td>0,409%</td>
+    </tr>
+    <tr>
+      <td>distribution_channel</td>
+      <td>0</td>
+      <td>5</td>
+      <td>5</td>
+      <td>0,004%</td>
+    </tr>
+    <tr>
+      <td>children</td>
+      <td>4</td>
+      <td>0</td>
+      <td>4</td>
+      <td>0,003%</td>
+    </tr>
+    <tr>
+      <td>market_segment</td>
+      <td>0</td>
+      <td>2</td>
+      <td>2</td>
+      <td>0,002%</td>
+    </tr>
+  </tbody>
+</table>
+<p>Para diagnosticar o mecanismo, comparamos as reservas <b>com</b> e <b>sem</b> o valor ausente em variáveis observadas
+(hotel, segmento, taxa de cancelamento). <b>Nenhum dado faltante foi simplesmente removido</b>:</p>
+<ul>
+<li><b>company (94,3%) e agent (13,7%) — ausência estrutural ("não se aplica")</b>: reservas sem empresa pagadora ou feitas
+sem agência. Viraram as variáveis <code>tem_empresa</code> e <code>tem_agente</code>. A ausência é informativa: 17,5% de
+cancelamento com empresa vs. 38,2% sem; 24,7% sem agente vs. 39,0% com.</li>
+<li><b>country (0,4%) — MAR</b>: 95% no resort, concentrado em reservas Corporativas/Diretas, com 13,7% de cancelamento (vs. 37%).
+A ausência depende de variáveis observadas; excluir enviesaria a base. Mantido como categoria "Desconhecido".</li>
+<li><b>children (4 linhas), market_segment (2) e distribution_channel (5) — MCAR</b>: volumes ínfimos sem padrão. Imputados pela
+moda (0 crianças; segmento mais comum do hotel urbano; canal deduzido do segmento).</li>
+<li><b>meal = 'Undefined' (1,0%)</b>: pela documentação, é o mesmo que 'SC' (sem refeição) — unificado.</li>
+</ul>
+<h3>8.3 Inconsistências, linhas repetidas e outliers</h3>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Etapa</th>
+      <th>Colunas</th>
+      <th>Linhas</th>
+      <th>Tratamento</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Linhas repetidas</td>
+      <td>todas</td>
+      <td>31.994</td>
+      <td>Mantidas (cada linha é um quarto reservado, o que importa para a ocupação). Marcadas na coluna 'duplicada' para análise de sensibilidade no dashboard.</td>
+    </tr>
+    <tr>
+      <td>Faltante</td>
+      <td>children</td>
+      <td>4</td>
+      <td>Imputado com a moda (0 crianças, 93% das reservas).</td>
+    </tr>
+    <tr>
+      <td>Faltante</td>
+      <td>country</td>
+      <td>488</td>
+      <td>Mantido como categoria própria 'Desconhecido'.</td>
+    </tr>
+    <tr>
+      <td>Faltante estrutural</td>
+      <td>agent</td>
+      <td>16.340</td>
+      <td>Criada a variável 'tem_agente' (0/1); ID ausente recodificado como 0 = 'sem agente'.</td>
+    </tr>
+    <tr>
+      <td>Faltante estrutural</td>
+      <td>company</td>
+      <td>112.593</td>
+      <td>Criada 'tem_empresa' (0/1). O ID (mais de 300 valores, 94% vazio) não é usado nas análises.</td>
+    </tr>
+    <tr>
+      <td>Faltante implícito</td>
+      <td>meal</td>
+      <td>1.169</td>
+      <td>'Undefined' unificado com 'SC' (Sem refeição).</td>
+    </tr>
+    <tr>
+      <td>Faltante implícito</td>
+      <td>market_segment, distribution_channel</td>
+      <td>7</td>
+      <td>Segmento imputado pela moda do hotel urbano (Agência online); canal deduzido do segmento (ex.: Agência online -&gt; Agência/operadora).</td>
+    </tr>
+    <tr>
+      <td>Inconsistência</td>
+      <td>adults, children, babies</td>
+      <td>180</td>
+      <td>Linhas removidas.</td>
+    </tr>
+    <tr>
+      <td>Outlier / erro</td>
+      <td>adr</td>
+      <td>2</td>
+      <td>Valor substituído pela mediana do mesmo hotel, mês e tipo de quarto. A reserva é mantida.</td>
+    </tr>
+    <tr>
+      <td>Outlier / erro</td>
+      <td>children, babies</td>
+      <td>3</td>
+      <td>Substituído pela moda (0).</td>
+    </tr>
+    <tr>
+      <td>Outlier mantido</td>
+      <td>lead_time, adr, adults, days_in_waiting_list, stays</td>
+      <td>0</td>
+      <td>Mantidos. Nos gráficos usamos faixas (antecedência) e medianas/quartis, que são robustos a valores extremos.</td>
+    </tr>
+  </tbody>
+</table>
+<p><b>Linhas repetidas (26,8%).</b> Não há número de reserva no dataset; linhas idênticas são, em sua maioria, quartos de uma
+mesma reserva de grupo (98% das reservas "Não reembolsáveis" se repetem). Como cada linha é um quarto — o que importa para a
+ocupação —, <b>mantivemos</b> as linhas e fizemos uma <b>análise de sensibilidade</b> (também disponível no dashboard):</p>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Base</th>
+      <th>Reservas</th>
+      <th>Taxa geral</th>
+      <th>0–7 dias</th>
+      <th>&gt; 1 ano</th>
+      <th>Sem pedido esp.</th>
+      <th>Com pedido esp.</th>
+      <th>Não reembolsável</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Com repetidas (base usada)</td>
+      <td>119.210</td>
+      <td>37,1%</td>
+      <td>9,6%</td>
+      <td>67,7%</td>
+      <td>47,8%</td>
+      <td>21,8%</td>
+      <td>99,4%</td>
+    </tr>
+    <tr>
+      <td>Sem repetidas</td>
+      <td>87.230</td>
+      <td>27,5%</td>
+      <td>8,4%</td>
+      <td>40,8%</td>
+      <td>33,3%</td>
+      <td>21,7%</td>
+      <td>94,7%</td>
+    </tr>
+  </tbody>
+</table>
+<p>Sem as repetidas a taxa geral cai de 37% para 28%, mas <b>todas as conclusões se mantêm</b>: o cancelamento cresce com a
+antecedência e quem faz pedido especial cancela menos.</p>
+<figure class=""><img src="../out/parte_especifica/figuras/q2_outliers.png" alt="Figura 22 — Outliers das principais variáveis numéricas por hotel (após correção dos erros)."><figcaption>Figura 22 — Outliers das principais variáveis numéricas por hotel (após correção dos erros).</figcaption></figure>
+<div class="nota"><p><b>O que mostra.</b> Boxplots por hotel das principais variáveis numéricas; pontos além dos bigodes estão fora de 1,5×IQR (regra de Tukey).</p><p><b>Insight.</b> Há valores extremos plausíveis (antecedência de até 737 dias, diárias de até 510 €, estadias de 69 noites) que foram mantidos, e erros evidentes (diária de 5.400 € e de −6,38 €; 10 bebês com 2 adultos) que foram corrigidos. Em variáveis discretas com IQR = 0 (adultos, alterações) a regra de Tukey marca até 25% das linhas — ela não serve para essas variáveis.</p><p><b>Por que este gráfico.</b> O boxplot é o gráfico padrão para outliers: mostra mediana, quartis e pontos extremos de uma vez, e colocar os dois hotéis lado a lado evita confundir diferenças entre hotéis com valores atípicos.</p></div>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Variável</th>
+      <th>q1</th>
+      <th>q3</th>
+      <th>Lim. sup. (Tukey)</th>
+      <th>Máximo</th>
+      <th>Outliers</th>
+      <th>%</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>lead_time</td>
+      <td>18,0</td>
+      <td>161,0</td>
+      <td>375,5</td>
+      <td>737,0</td>
+      <td>2.981</td>
+      <td>2,5%</td>
+    </tr>
+    <tr>
+      <td>adr</td>
+      <td>69,5</td>
+      <td>126,0</td>
+      <td>210,8</td>
+      <td>510,0</td>
+      <td>3.863</td>
+      <td>3,2%</td>
+    </tr>
+    <tr>
+      <td>noites_total</td>
+      <td>2,0</td>
+      <td>4,0</td>
+      <td>7,0</td>
+      <td>69,0</td>
+      <td>5.226</td>
+      <td>4,4%</td>
+    </tr>
+    <tr>
+      <td>adults</td>
+      <td>2,0</td>
+      <td>2,0</td>
+      <td>2,0</td>
+      <td>55,0</td>
+      <td>29.530</td>
+      <td>24,8%</td>
+    </tr>
+    <tr>
+      <td>children</td>
+      <td>0,0</td>
+      <td>0,0</td>
+      <td>0,0</td>
+      <td>3,0</td>
+      <td>8.589</td>
+      <td>7,2%</td>
+    </tr>
+    <tr>
+      <td>babies</td>
+      <td>0,0</td>
+      <td>0,0</td>
+      <td>0,0</td>
+      <td>2,0</td>
+      <td>915</td>
+      <td>0,8%</td>
+    </tr>
+    <tr>
+      <td>days_in_waiting_list</td>
+      <td>0,0</td>
+      <td>0,0</td>
+      <td>0,0</td>
+      <td>391,0</td>
+      <td>3.693</td>
+      <td>3,1%</td>
+    </tr>
+    <tr>
+      <td>previous_cancellations</td>
+      <td>0,0</td>
+      <td>0,0</td>
+      <td>0,0</td>
+      <td>26,0</td>
+      <td>6.479</td>
+      <td>5,4%</td>
+    </tr>
+    <tr>
+      <td>booking_changes</td>
+      <td>0,0</td>
+      <td>0,0</td>
+      <td>0,0</td>
+      <td>18,0</td>
+      <td>17.978</td>
+      <td>15,1%</td>
+    </tr>
+    <tr>
+      <td>total_of_special_requests</td>
+      <td>0,0</td>
+      <td>1,0</td>
+      <td>2,5</td>
+      <td>5,0</td>
+      <td>2.874</td>
+      <td>2,4%</td>
+    </tr>
+  </tbody>
+</table><h2 class="quebra">9. Visualizações exploratórias e notas analíticas</h2><p>As seis visualizações a seguir cobrem os pilares distribucional e relacional, sempre em relação ao alvo. No dashboard elas respondem a filtros (hotel, ano, meses, segmento, tipo de cliente e remoção das linhas repetidas).</p><div class='bloco'><h3>E1. Distribuição da antecedência — canceladas x não canceladas</h3><figure class=""><img src="../out/parte_especifica/figuras/e1_antecedencia.png" alt="E1. Distribuição da antecedência — canceladas x não canceladas"><figcaption>E1. Distribuição da antecedência — canceladas x não canceladas</figcaption></figure></div><div class="nota"><p><b>O que mostra.</b> Distribuição (em % de cada grupo) dos dias entre a reserva e a chegada, separando reservas canceladas e não canceladas. Linhas tracejadas = medianas.</p><p><b>Insight.</b> As reservas não canceladas se concentram nos primeiros dias (26% com até 10 dias de antecedência). As canceladas se espalham por prazos longos: mediana de 113 dias contra 45. A partir de ~40 dias a curva laranja fica sempre acima da azul — antecedência longa é um sinal de risco.</p><p><b>Por que este gráfico.</b> Histograma em degraus (step) normalizado por grupo: compara a FORMA de duas distribuições de tamanhos diferentes (75 mil x 44 mil) sem que uma barra esconda a outra, como aconteceria com barras sobrepostas.</p></div><div class='bloco'><h3>E2. Sazonalidade — volume e cancelamento por mês</h3><figure class=""><img src="../out/parte_especifica/figuras/e2_sazonalidade.png" alt="E2. Sazonalidade — volume e cancelamento por mês"><figcaption>E2. Sazonalidade — volume e cancelamento por mês</figcaption></figure></div><div class="nota"><p><b>O que mostra.</b> Painel de cima: reservas por mês de chegada (média dos anos disponíveis). Painel de baixo: taxa de cancelamento no mesmo mês. Uma linha por hotel.</p><p><b>Insight.</b> O hotel urbano tem mais volume e cancela mais em todos os meses (42% vs. 28% no ano). O resort tem a taxa mais sazonal: 15% em janeiro e ~33% no verão (jun–set), quando a demanda é maior e o hóspede &#x27;segura&#x27; a vaga com antecedência. No urbano o pico de cancelamento é na primavera (abr–jun, ~45%).</p><p><b>Por que este gráfico.</b> Linhas são a forma natural para tempo. Volume e taxa têm escalas diferentes, então usamos DOIS painéis com o mesmo eixo X em vez de um gráfico com dois eixos Y (que induz comparações falsas).</p></div><div class='bloco'><h3>E3. Correlação entre variáveis numéricas</h3><figure class="alta"><img src="../out/parte_especifica/figuras/e3_correlacao.png" alt="E3. Correlação entre variáveis numéricas"><figcaption>E3. Correlação entre variáveis numéricas</figcaption></figure></div><div class="nota"><p><b>O que mostra.</b> Matriz de correlação de Spearman entre as variáveis numéricas e o alvo (Cancelada = 1). Vermelho = correlação positiva, azul = negativa, cinza = nenhuma.</p><p><b>Insight.</b> Com o cancelamento: antecedência (+0,32) e cancelamentos anteriores (+0,27) aumentam o risco; pedidos especiais (−0,26), vaga de estacionamento (−0,20) e alterações na reserva (−0,18) diminuem. Entre as explicativas: reservas anteriores mantidas e hóspede recorrente andam juntas (+0,76); via agente e via empresa são quase excludentes (−0,59). Nenhuma correlação isolada é forte: o risco é multivariado.</p><p><b>Por que este gráfico.</b> Heatmap triangular com escala divergente centrada em zero mostra todas as relações de uma vez sem repetição; Spearman porque as variáveis são contagens assimétricas e as relações não são lineares.</p></div><div class='bloco'><h3>E4. Diária média (ADR) por mês e hotel</h3><figure class=""><img src="../out/parte_especifica/figuras/e4_adr.png" alt="E4. Diária média (ADR) por mês e hotel"><figcaption>E4. Diária média (ADR) por mês e hotel</figcaption></figure></div><div class="nota"><p><b>O que mostra.</b> Boxplots da diária média (€) por mês de chegada, um para cada hotel (cortesias com ADR = 0 excluídas).</p><p><b>Insight.</b> O resort tem preço fortemente sazonal: mediana de ~48 € em janeiro e ~188 € em agosto. O hotel urbano é estável (80–120 €). A dispersão também cresce no verão do resort — época em que a receita perdida com cada cancelamento é muito maior.</p><p><b>Por que este gráfico.</b> Boxplot resume a distribuição (mediana, quartis, amplitude) de milhares de diárias por mês e permite comparar 24 grupos lado a lado; cores fixas por hotel mantêm a leitura consistente com E2.</p></div><div class='bloco'><h3>E5. Cancelamento por segmento e tipo de depósito</h3><figure class=""><img src="../out/parte_especifica/figuras/e5_segmento_deposito.png" alt="E5. Cancelamento por segmento e tipo de depósito"><figcaption>E5. Cancelamento por segmento e tipo de depósito</figcaption></figure></div><div class="nota"><p><b>O que mostra.</b> Taxa de cancelamento em cada combinação de segmento de mercado e tipo de depósito; o número de reservas (n) está em cada célula.</p><p><b>Insight.</b> Paradoxo: reservas &#x27;Não reembolsáveis&#x27; cancelam 99%. Não é o hóspede pagando para cancelar — são lotes de quartos de Grupos e Operadoras offline (98% são linhas repetidas, quase todos de Portugal, sem nenhum pedido especial) liberados em bloco. Sem depósito, o maior risco é a Agência online (37%) e o menor, Direto/Corporativo (14–15%). Células com n pequeno (ex.: Reembolsável) não devem ser lidas como tendência.</p><p><b>Por que este gráfico.</b> Heatmap é a forma adequada para uma métrica em duas dimensões categóricas; a rampa de uma só cor (laranja = cancelamento) vai de &#x27;pouco&#x27; a &#x27;muito&#x27; sem sugerir sinal, e o n escrito evita superinterpretar células pequenas.</p></div><div class='bloco'><h3>E6. Sinais de relacionamento do hóspede</h3><figure class=""><img src="../out/parte_especifica/figuras/e6_compromisso.png" alt="E6. Sinais de relacionamento do hóspede"><figcaption>E6. Sinais de relacionamento do hóspede</figcaption></figure></div><div class="nota"><p><b>O que mostra.</b> Taxa de cancelamento por número de pedidos especiais, por hóspede recorrente e por reserva via agente; a linha tracejada é a média geral.</p><p><b>Insight.</b> Qualquer pedido especial derruba o cancelamento de 48% para 22% (e 17% com 3 ou mais). Hóspedes recorrentes cancelam 15% contra 38%. Reservas via agente cancelam mais (39% vs. 25%). Todos apontam na mesma direção: quanto mais vínculo/planejamento, menor o risco.</p><p><b>Por que este gráfico.</b> Barras verticais comparam taxas entre poucas categorias; a mesma escala Y nos três painéis e a linha de média permitem ver rapidamente o que fica acima ou abaixo do normal.</p></div><h2 class="quebra">10. Storytelling: da exploratória à explanatória</h2><div class="destaque"><b>Grande ideia.</b> Mais de 1 em cada 3 reservas é cancelada, e o risco já está escrito na reserva: quanto maior a antecedência e menor o envolvimento do hóspede (nenhum pedido especial), maior a chance de perder o quarto. O perfil &#x27;mais de 90 dias e nenhum pedido especial&#x27; é 27% das reservas, mas 47% dos cancelamentos.</div><p><b>Público-alvo.</b> Gestão dos dois hotéis — gerente geral e gerente de receitas/reservas (revenue manager). São pessoas de negócio, não técnicas: querem saber ONDE está o risco e O QUE FAZER (política de depósito, overbooking, contato de confirmação). Por isso as visualizações explanatórias usam poucos elementos, uma cor de destaque, números escritos no próprio gráfico e títulos que já dizem a conclusão.</p><h3>Raciocínio registrado</h3><h4>1. O que a exploração encontrou</h4><p>A distribuição da antecedência (E1) mostrou que reservas canceladas são feitas muito antes (mediana de 113 dias contra 45). A correlação (E3) confirmou a antecedência como a variável numérica mais associada ao cancelamento (ρ = +0,32) e os pedidos especiais como o principal fator de proteção (ρ = −0,26). Os sinais de relacionamento (E6) mostraram que quem faz pedido especial cancela menos da metade (22% contra 48%).</p><h4>2. Que história os dados contam</h4><p>Os dois fatores se somam: em TODA faixa de antecedência, quem fez ao menos um pedido especial cancela cerca de metade (ou menos) do que quem não fez. Uma reserva longa e &#x27;fria&#x27; (sem pedidos) é o perfil típico de cancelamento: reserva especulativa, feita para garantir preço/data, que é abandonada depois.</p><h4>3. Por que essa mensagem é a mais relevante para o público</h4><p>Gestores não controlam a sazonalidade nem o país do hóspede, mas controlam a POLÍTICA de reservas: exigir depósito ou confirmação para reservas longas, calibrar overbooking por perfil e contatar hóspedes sem pedidos especiais. Antecedência e pedidos especiais são conhecidos no ato da reserva — dá para agir antes do prejuízo. Achados como &#x27;Não reembolsável cancela 99%&#x27; foram deixados na exploração: são contraintuitivos, vêm de lotes de grupos (linhas repetidas) e confundiriam a mensagem principal.</p><h4>4. Técnicas usadas para destacar a mensagem (atributos pré-atentivos)</h4><p>COR: um único laranja (a cor de &#x27;cancelamento&#x27; em todo o projeto) marca o que importa — as faixas acima da média (X1), a linha &#x27;nenhum pedido especial&#x27; (X2) e o perfil de risco (X3); todo o resto fica em cinza. TAMANHO/PESO: a linha de risco é mais grossa e os percentuais-chave estão em negrito e maiores. POSIÇÃO: barras ordenadas pela antecedência (ordem natural, da esquerda para a direita) e o perfil de risco sempre na primeira posição, à esquerda. TEXTO: o título de cada gráfico é a própria conclusão e uma linha de referência marca a média geral.</p><div class='bloco'><h3>X1. Quanto mais cedo o hóspede reserva, maior a chance de cancelar</h3><figure class=""><img src="../out/parte_especifica/figuras/x1_antecedencia.png" alt="X1. Quanto mais cedo o hóspede reserva, maior a chance de cancelar"><figcaption>X1. Quanto mais cedo o hóspede reserva, maior a chance de cancelar</figcaption></figure></div><div class="nota"><p><b>O que mostra.</b> Taxa de cancelamento por faixa de antecedência. Laranja = faixas acima da média geral (37%); cinza = abaixo. RESPONDE DIRETAMENTE À PERGUNTA DE PESQUISA.</p><p><b>Insight.</b> O risco cresce de forma contínua com a antecedência: 10% (até 7 dias) → 28% → 38% → 45% → 55% → 68% (mais de 1 ano). Reservas com mais de 30 dias já ficam acima da média; acima de 6 meses, mais da metade é cancelada. O padrão se mantém em cada hotel e também removendo as linhas repetidas.</p><p><b>Por que este gráfico.</b> Barras ordenadas pela ordem natural da antecedência, com UMA cor de destaque e o resto em cinza: o gestor vê a escada sem precisar ler o eixo. Os percentuais escritos nas barras dispensam consulta à escala e a linha da média dá a referência.</p></div><div class='bloco'><h3>X2. Um pedido especial corta o cancelamento pela metade</h3><figure class=""><img src="../out/parte_especifica/figuras/x2_pedidos.png" alt="X2. Um pedido especial corta o cancelamento pela metade"><figcaption>X2. Um pedido especial corta o cancelamento pela metade</figcaption></figure></div><div class="nota"><p><b>O que mostra.</b> Taxa de cancelamento por faixa de antecedência, separando reservas sem nenhum pedido especial (laranja, linha grossa) e com pelo menos um (cinza).</p><p><b>Insight.</b> Em todas as faixas, quem fez pedido especial cancela metade ou menos: 36% → 20% (8–30 dias), 58% → 26% (91–180 dias), 67% → 32% (181–365 dias). O pior cenário é antecedência longa SEM pedido (85% acima de 1 ano). Os dois fatores da hipótese se somam.</p><p><b>Por que este gráfico.</b> Duas linhas no mesmo eixo mostram ao mesmo tempo o efeito da antecedência (inclinação) e o do pedido especial (distância entre as linhas). Rótulos diretos no fim das linhas substituem a legenda e o contraste cor/espessura dirige o olhar para a linha de risco.</p></div><div class='bloco'><h3>X3. 27% das reservas geram 47% dos cancelamentos</h3><figure class=""><img src="../out/parte_especifica/figuras/x3_perfis.png" alt="X3. 27% das reservas geram 47% dos cancelamentos"><figcaption>X3. 27% das reservas geram 47% dos cancelamentos</figcaption></figure></div><div class="nota"><p><b>O que mostra.</b> Participação de cada perfil (antecedência &gt; ou ≤ 90 dias × com/sem pedido especial) no total de reservas (barra de cima) e no total de cancelamentos (barra de baixo).</p><p><b>Insight.</b> O perfil &#x27;mais de 90 dias e nenhum pedido especial&#x27; é só 27% das reservas, mas responde por 47% dos cancelamentos (64% delas são canceladas). É ali que uma política de depósito/confirmação tem mais retorno: atinge pouco mais de 1/4 dos hóspedes e quase metade do problema.</p><p><b>Por que este gráfico.</b> Barras 100% empilhadas lado a lado comparam composição (parte do todo) entre duas bases; o segmento de risco vem primeiro, em laranja, alinhado à esquerda para que a diferença de comprimento salte aos olhos. Usamos barras e não pizza porque comprimentos alinhados são comparados com muito mais precisão do que ângulos.</p></div><table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Perfil</th>
+      <th>Reservas</th>
+      <th>Canceladas</th>
+      <th>Taxa</th>
+      <th>% das reservas</th>
+      <th>% dos cancelamentos</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>&gt; 90 dias e nenhum pedido especial</td>
+      <td>32.486</td>
+      <td>20.779</td>
+      <td>64,0%</td>
+      <td>27,3%</td>
+      <td>47,0%</td>
+    </tr>
+    <tr>
+      <td>≤ 90 dias e nenhum pedido especial</td>
+      <td>37.715</td>
+      <td>12.755</td>
+      <td>33,8%</td>
+      <td>31,6%</td>
+      <td>28,9%</td>
+    </tr>
+    <tr>
+      <td>&gt; 90 dias e ≥ 1 pedido especial</td>
+      <td>18.615</td>
+      <td>5.111</td>
+      <td>27,5%</td>
+      <td>15,6%</td>
+      <td>11,6%</td>
+    </tr>
+    <tr>
+      <td>≤ 90 dias e ≥ 1 pedido especial</td>
+      <td>30.394</td>
+      <td>5.554</td>
+      <td>18,3%</td>
+      <td>25,5%</td>
+      <td>12,6%</td>
+    </tr>
+  </tbody>
+</table><h3>Recomendações para a gestão</h3><ol><li>Exigir depósito parcial ou reconfirmação para reservas com mais de 90 dias de antecedência e nenhum pedido especial (o perfil que concentra 47% dos cancelamentos).</li><li>Incentivar pedidos especiais no fluxo de reserva (berço, andar, horário de chegada): além de melhorar a experiência, é o sinal de compromisso mais forte que os dados mostram.</li><li>Calibrar o overbooking por perfil de risco em vez de usar uma taxa única: o hotel urbano (42% de cancelamento) e reservas de longo prazo comportam mais overbooking do que reservas de última hora (10%).</li><li>Rever a política &#x27;Não reembolsável&#x27; com grupos e operadoras: na prática ela não protege (99% cancelam), o que indica bloqueios de quartos liberados em lote — vale negociar prazos de liberação (release) em contrato.</li></ol><h2 class="quebra">11. O risco é previsível? Modelo de classificação</h2>
+<p>Para responder à segunda parte da pergunta, treinamos um <code>HistGradientBoostingClassifier</code> (scikit-learn) usando
+<b>apenas informações conhecidas no momento da reserva</b>. Excluímos: <code>reservation_status(_date)</code> (desfecho),
+<code>assigned_room_type</code> (definido no check-in), <code>booking_changes</code> (posterior à reserva),
+<code>required_car_parking_spaces</code> (0% de cancelamento entre quem pediu vaga — indício de registro na chegada),
+ano e IDs de agente/empresa. A divisão é <b>temporal</b>: treino com chegadas até dez/2016 (78.590
+reservas) e teste com 2017 (40.620), o que simula o uso real e evita que quartos repetidos de um mesmo
+grupo caiam no treino e no teste.</p>
+<table><tr><th>AUC</th><th>Acurácia</th><th>Acurácia "nunca cancela"</th><th>Precisão</th><th>Recall</th><th>F1</th></tr>
+<tr><td>0,84</td><td>77,4%</td><td>61,3%</td>
+<td>78,7%</td><td>57,0%</td><td>0,66</td></tr></table>
+<figure class=""><img src="../out/parte_especifica/figuras/m2_matriz_confusao.png" alt="Figura — Matriz de confusão do modelo no teste (2017)."><figcaption>Figura — Matriz de confusão do modelo no teste (2017).</figcaption></figure>
+<div class="nota"><p><b>O que mostra.</b> Curva ROC e matriz de confusão do classificador, treinado com chegadas até 2016 e testado em 2017.</p><p><b>Insight.</b> AUC de 0,84: o modelo ordena bem o risco. Com limiar 0,5 acerta 77% (contra 61% de &#x27;nunca cancela&#x27;), com precisão de 79% — quando aponta risco, geralmente acerta — mas recall de 57%: parte dos cancelamentos não é previsível só com os dados da reserva. Resposta à 2ª parte da pergunta: o risco é parcialmente previsível, suficiente para PRIORIZAR ações, não para decidir reserva a reserva.</p><p><b>Por que este gráfico.</b> A ROC mostra o equilíbrio entre acertos e alarmes falsos em todos os limiares; a matriz de confusão mostra, em contagens absolutas, os dois tipos de erro no limiar escolhido.</p></div>
+<figure class=""><img src="../out/parte_especifica/figuras/m1_importancia.png" alt="Figura — Importância das variáveis por permutação (queda da AUC)."><figcaption>Figura — Importância das variáveis por permutação (queda da AUC).</figcaption></figure>
+<div class="nota"><p><b>O que mostra.</b> Quanto a qualidade do modelo (AUC) cai quando os valores de cada variável são embaralhados no conjunto de teste (importância por permutação).</p><p><b>Insight.</b> Segmento de mercado, país de origem e tipo de depósito lideram (capturam os lotes de grupos e as reservas domésticas, que cancelam 57%); logo depois vêm pedidos especiais e antecedência — as duas variáveis da hipótese, confirmadas mesmo controlando por todas as outras.</p><p><b>Por que este gráfico.</b> Barras horizontais ordenadas são a forma mais legível para ranking com nomes longos; a barra de erro mostra a variação entre as repetições da permutação.</p></div>
+<div class="destaque"><b>Resposta à pergunta de pesquisa.</b> As características da reserva que mais indicam risco são a
+<b>antecedência longa</b> e a <b>ausência de pedidos especiais</b> (hipótese confirmada), além do segmento/canal (agências e
+grupos), do país de origem (reservas domésticas) e do tipo de depósito (lotes não reembolsáveis de operadoras). O risco é
+<b>parcialmente previsível</b> (AUC 0,84; 77% de acurácia contra 61% da linha de base): suficiente para <b>priorizar</b> ações
+— depósito, reconfirmação, overbooking por perfil —, não para decidir reserva a reserva.</div><h2>12. Dashboard em Streamlit</h2>
+<p>Execução: <code>streamlit run src/parte_especifica/dashboard.py</code>. O dashboard tem 7 páginas em duas seções:</p>
+<table><tr><th>Página</th><th>Conteúdo</th></tr>
+<tr><td>Visão geral</td><td>Pergunta, hipótese, público-alvo, grande ideia, KPIs e guia de navegação</td></tr>
+<tr><td>História: o que fazer</td><td>As 3 explanatórias com notas, recomendações, raciocínio do storytelling e comparação lado a lado com/sem linhas repetidas</td></tr>
+<tr><td>Exploração</td><td>As 6 exploratórias com notas analíticas, organizadas em seções</td></tr>
+<tr><td>Explorador de variáveis</td><td>Escolha livre de X e Y: gráfico e medida de associação (Spearman, η², V de Cramér) se adaptam aos tipos — útil para interpretar ao vivo qualquer par de variáveis</td></tr>
+<tr><td>Simulador de risco</td><td>Desempenho do modelo (ROC, matriz de confusão, importâncias) e simulação do risco de uma reserva hipotética, com curva de risco × antecedência</td></tr>
+<tr><td>Qualidade dos dados</td><td>Estrutura, faltantes e evidências do mecanismo, outliers por variável, linhas repetidas e log de tratamentos</td></tr>
+<tr><td>K-Means: duas passadas (Parte Comum)</td><td>Cotovelo, <b>animação</b> dos agrupamentos de k = 2 a 10, acurácia/ARI por k, Passada 1 × Passada 2 lado a lado, contingência, matrizes, métricas e discussão crítica</td></tr></table>
+<p><b>Recursos de interatividade (bônus Visual/UX):</b> filtros globais interligados na barra lateral (hotel, ano, meses,
+segmento e tipo de cliente com contagens que se atualizam conforme os demais filtros; os filtros persistem entre páginas);
+botão de análise de sensibilidade (remover linhas repetidas); seleção interativa de variáveis/eixos; comparação lado a lado;
+animação de transição entre valores de k do K-Means; página dedicada à Parte Comum; simulador com o modelo; e
+<b>exportação</b> dos dados filtrados (CSV) e de um <b>relatório HTML</b> da seleção atual, com gráficos interativos e notas.</p>
+<p><b>Boas práticas visuais aplicadas:</b> paleta com significado fixo em todo o projeto (azul = não cancelada, laranja =
+cancelamento/risco, cinza = contexto; violeta/verde para os hotéis), checada para daltonismo; um único eixo Y por gráfico
+(volume e taxa em painéis separados); títulos que dizem a conclusão nas explanatórias; rótulos diretos; nenhum gráfico de
+pizza ou radar; dados pré-agregados para manter o dashboard rápido.</p><h2>13. Conclusões, limitações e uso de IA</h2>
+<ul>
+<li><b>Parte Comum:</b> o cotovelo sugere 4 grupos, que refletem gênero e peso; com k = 7 a concordância com as classes sobe
+(44,8%, ARI 0,24), mas os dados não sustentam 7 níveis distintos — em especial Sobrepeso I e II. A classe é o IMC
+discretizado e parte da estrutura vem de artefatos do SMOTE.</li>
+<li><b>Parte Específica:</b> 37% das reservas são canceladas (39% da receita estimada). Antecedência e pedidos especiais são os
+sinais mais acionáveis: o perfil "mais de 90 dias e nenhum pedido especial" concentra 47% dos cancelamentos em 27% das
+reservas. O risco é parcialmente previsível (AUC 0,84).</li>
+<li><b>Limitações:</b> dados de dois hotéis portugueses entre 2015 e 2017 (generalização limitada); ausência de ID de reserva
+(linhas repetidas tratadas por sensibilidade); a receita é estimada (ADR × noites); o modelo é associativo, não causal;
+na Parte Comum, os 77% de dados sintéticos limitam conclusões sobre a população real.</li>
+<li><b>Uso de IA:</b> ferramentas de IA foram usadas no desenvolvimento, conforme permitido pelo enunciado e detalhado em
+<code>docs/DECLARACAO_IA.pdf</code>, assinada por todos os integrantes.</li>
+</ul>
+<h3>Referências</h3>
+<ul>
+<li>Antonio, N.; Almeida, A.; Nunes, L. (2019). Hotel booking demand datasets. <i>Data in Brief</i>, 22, 41–49.</li>
+<li>Palechor, F. M.; de la Hoz Manotas, A. (2019). Dataset for estimation of obesity levels based on eating habits and physical
+condition. <i>Data in Brief</i>, 25, 104344. UCI Machine Learning Repository, dataset 544.</li>
+<li>Knaflic, C. N. (2015). <i>Storytelling with Data</i>. Wiley.</li>
+<li>Satopää, V. et al. (2011). Finding a "kneedle" in a haystack: detecting knee points in system behavior. ICDCS Workshops.</li>
+<li>Pedregosa, F. et al. (2011). Scikit-learn: Machine Learning in Python. <i>JMLR</i>, 12, 2825–2830.</li>
+</ul></body></html>
